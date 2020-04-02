@@ -21,9 +21,13 @@ module.exports = {
         indent: ['error', 4],
         'linebreak-style': ['error', 'unix'],
         quotes: ['error', 'single'],
-        semi: ['error', 'never'],
+        semi: ['error', 'always'],
         eqeqeq: ['error', 'smart'],
         'no-eq-null': 0,
-        'no-param-reassign': 0
+        'no-param-reassign': 0,
+        '@typescript-eslint/no-explicit-any': 0,
+        '@typescript-eslint/no-unused-vars': 0,
+        '@typescript-eslint/camelcase': 0,
+        '@typescript-eslint/no-this-alias': 0
     }
-}
+};
