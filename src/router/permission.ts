@@ -1,8 +1,10 @@
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
+import { getModule } from 'vuex-module-decorators';
 import router from '.';
 import utils from '@/utils/utils';
 import request from '@/utils/axios';
+import { GET_INFO_FROM_LOCAL } from '@/store/types';
 
 /**
  * TODO注释
@@ -21,6 +23,7 @@ router.beforeEach(async (to, from, next) => {
                     const data = await request.getToken();
                     next();
                 } catch (error) {
+                    console.log(error);
                     next({ path: '/login', replace: true });
                 }
             }
@@ -29,6 +32,7 @@ router.beforeEach(async (to, from, next) => {
         }
     } else {
         if (token != null) {
+            // 手动刷新 或 从localhost:8080跳转
             if (from.name == null && from.path === '/') {
                 try {
                     const data = await request.getToken();
@@ -38,6 +42,9 @@ router.beforeEach(async (to, from, next) => {
                 }
             }
         } else {
+            if (to.name == null && to.path === '/') {
+                next({ path: '/login', replace: true });
+            }
             next();
         }
     }

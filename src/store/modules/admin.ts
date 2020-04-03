@@ -2,7 +2,7 @@ import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 import CryptoJS from 'crypto-js';
 import util from '@/utils/utils';
 import request from '@/utils/axios';
-import { WRITE_INFO_INTO_LOCAL, LOGIN_PASSPORT } from '../types';
+import { WRITE_INFO_INTO_LOCAL, LOGIN_PASSPORT, GET_INFO_FROM_LOCAL } from '../types';
 import config from '@/config/config.default';
 
 @Module({
@@ -29,6 +29,26 @@ export default class Test extends VuexModule {
         this.userInfo = userInfo as any;
         // 写入localStorage
         util.setItem({ token, _id, userInfo });
+    }
+    @Mutation
+    [GET_INFO_FROM_LOCAL]() {
+        return new Promise((resolve, reject) => {
+            if (this.userInfo.username.length > 0) {
+                resolve(true);
+                return;
+            }
+            const userInfo = util.getItem('userInfo');
+            const token = util.getItem('token');
+            const _id = util.getItem('_id');
+            if (userInfo && token && _id) {
+                this.userInfo = userInfo;
+                this.token = token;
+                this._id = _id;
+                resolve(true);
+            } else {
+                reject(new Error('localStorage不存在userInfo'));
+            }
+        });
     }
     @Action
     async [LOGIN_PASSPORT](account: Record<string, any>) {
