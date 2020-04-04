@@ -98,12 +98,27 @@ const rules = {
     isEmpty: (msg: string) => ({
         message: `请输入${msg}`
     }),
-    message: (message = '登录成功', type = 'success', duration = '3000', showClose = true) => ({
+    message: (message = '登录成功', type = 'success', duration = '2000', showClose = true) => ({
         message,
         type,
         duration,
         showClose
-    })
+    }),
+    xss: {
+        pattern: /<\/?script>/,
+        message: '含有非法字符',
+        trigger: 'blur'
+    },
+    required: (message: string, trigger = 'blur') => ({
+        required: true,
+        message,
+        trigger
+    }),
+    password: {
+        pattern: /^[\w_]{6,16}$/,
+        message: '密码长度需6-16位且只包含字母,数字,_',
+        trigger: 'blur'
+    }
 };
 
 export default class Rules {

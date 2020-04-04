@@ -2,7 +2,14 @@ import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 import CryptoJS from 'crypto-js';
 import util from '@/utils/utils';
 import request from '@/utils/axios';
-import { WRITE_INFO_INTO_LOCAL, LOGIN_PASSPORT, GET_INFO_FROM_LOCAL } from '../types';
+import {
+    WRITE_INFO_INTO_LOCAL,
+    LOGIN_PASSPORT,
+    GET_INFO_FROM_LOCAL,
+    ADMIN_LOGOUT,
+    UPDATE_ADMIN_INFO,
+    UPDATE_ADMIN_INFO_LOCAL
+} from '../types';
 import config from '@/config/config.default';
 
 @Module({
@@ -50,6 +57,25 @@ export default class Test extends VuexModule {
             }
         });
     }
+    @Mutation
+    [ADMIN_LOGOUT]() {
+        this.userInfo = {
+            username: '',
+            avatar: '',
+            description: '',
+            role: '',
+            role_name: '',
+            create_time: '',
+            id: ''
+        };
+        this.token = '';
+        this._id = '';
+        util.removeItem('userInfo', 'token', '_id');
+    }
+    @Mutation
+    [UPDATE_ADMIN_INFO_LOCAL](info: Record<string, any>) {
+        this.userInfo = Object.assign(this.userInfo, info);
+    }
     @Action
     async [LOGIN_PASSPORT](account: Record<string, any>) {
         const { username, password } = account;
@@ -58,5 +84,17 @@ export default class Test extends VuexModule {
         const data = await request.getToken(username, encrypto);
         data.code === 0 && this.context.commit(WRITE_INFO_INTO_LOCAL, data.info);
         return data;
+    }
+    @Action
+    async [UPDATE_ADMIN_INFO](info: Record<string, any>) {
+        try {
+            // updatedInfo包含token,_id
+            const updatedInfo = await request.updateUserInfo(info);
+            this.context.commit(UPDATE_ADMIN_INFO_LOCAL, info);
+            util.setItem('userInfo', this.userInfo);
+            return updatedInfo.message;
+        } catch (error) {
+            console.log(error);
+        }
     }
 }

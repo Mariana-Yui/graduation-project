@@ -8,12 +8,12 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import LayoutHeader from '@/components/Layout/Header.vue';
+import LayoutHeader from '@/components/Layout/Header/index.vue';
 import LayoutNav from '@/components/Layout/Nav.vue';
 import LayoutFooter from '@/components/Layout/Footer.vue';
 import { getModule } from 'vuex-module-decorators';
 import AdminModule from '@/store/modules/admin';
-import { GET_INFO_FROM_LOCAL } from '../../store/types';
+import { GET_INFO_FROM_LOCAL } from '@/store/types';
 
 @Component({
     components: {

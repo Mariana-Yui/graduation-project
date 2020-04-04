@@ -1,4 +1,5 @@
 /* eslint-disable indent */
+import CryptoJS from 'crypto-js';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
 import router from '../router';
 import config from '../config/config.default';
@@ -26,14 +27,19 @@ class Request {
         instance.interceptors.response.use(
             (res: AxiosResponse) => res,
             (error: AxiosError) => {
-                switch (error.response.status) {
-                    case 401: {
-                        const url = error.response.config.url;
-                        if (!/\/login/.test(url)) {
-                            router.replace({ path: '/login', query: { redirect: '/dashboard' } });
+                if (error.response && error.response.status) {
+                    switch (error.response.status) {
+                        case 401: {
+                            const url = error.response.config.url;
+                            if (!/\/login/.test(url)) {
+                                router.replace({
+                                    path: '/login',
+                                    query: { redirect: '/dashboard' }
+                                });
+                            }
+                            utils.removeItem('token', '_id', 'userInfo');
+                            break;
                         }
-                        utils.removeItem('token', '_id', 'userInfo');
-                        break;
                     }
                 }
                 return Promise.reject(error);
@@ -55,6 +61,26 @@ class Request {
         const { data } = await this.instance.post('/admin/login', {
             username,
             password
+        });
+        return data;
+    }
+    public async checkUsername(username: string) {
+        const { data } = await this.instance.get('/profile/checkUsername', {
+            params: {
+                username
+            }
+        });
+        return data;
+    }
+    public async updateUserInfo(info: Record<string, any>) {
+        const { data } = await this.instance.post('/profile/updateProfile', info);
+        return data;
+    }
+    public async checkPassword(username: string, password: string) {
+        console.log(password);
+        const { data } = await this.instance.post('/profile/checkPassword', {
+            username,
+            password: CryptoJS.MD5(password, config.secret_key).toString()
         });
         return data;
     }
