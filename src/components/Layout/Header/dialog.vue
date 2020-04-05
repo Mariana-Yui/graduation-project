@@ -6,7 +6,9 @@
                     <span>头像</span>
                     <img :src="form.avatar" alt="avatar" />
                     <!-- TODO avatar -->
-                    <el-button type="primary" plain>更换头像</el-button>
+                    <el-button type="primary" icon="upload" @click="openUploadFileDialog" plain>
+                        更换头像
+                    </el-button>
                 </div>
                 <el-form-item label="昵称" :label-width="formLabelWidth" prop="username">
                     <el-input v-model="form.username" autocomplete="off"></el-input>

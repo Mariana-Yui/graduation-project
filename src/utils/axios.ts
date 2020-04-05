@@ -4,6 +4,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosError, AxiosResponse } f
 import router from '../router';
 import config from '../config/config.default';
 import utils from './utils';
+import * as qiniu from 'qiniu-js';
 
 class Request {
     private instance: AxiosInstance;
@@ -47,6 +48,7 @@ class Request {
         );
         this.instance = instance;
     }
+    /*******************************登录页**************************************/
     public async getCaptcha() {
         const { data } = await this.instance.get('/admin/getCaptcha');
         return data;
@@ -64,6 +66,7 @@ class Request {
         });
         return data;
     }
+    /*******************************个人资料**************************************/
     public async checkUsername(username: string) {
         const { data } = await this.instance.get('/profile/checkUsername', {
             params: {
@@ -77,12 +80,49 @@ class Request {
         return data;
     }
     public async checkPassword(username: string, password: string) {
-        console.log(password);
         const { data } = await this.instance.post('/profile/checkPassword', {
             username,
             password: CryptoJS.MD5(password, config.secret_key).toString()
         });
         return data;
+    }
+    public async updatePassword(username: string, password: string) {
+        const { data } = await this.instance.post('/profile/updatePassword', {
+            username,
+            password: CryptoJS.MD5(password, config.secret_key).toString()
+        });
+        return data;
+    }
+    /*******************************七牛云**************************************/
+    public async getUpToken() {
+        const { data } = await this.instance.get('/qiniu/getUpToken');
+        return data;
+    }
+    public async uploadFile(
+        file: Blob,
+        key: string,
+        token: string,
+        putExtra: Record<string, any> = { fname: '', params: {}, mimeType: null },
+        config = { useCdnDomain: true }
+    ) {
+        return new Promise((resolve, reject) => {
+            const observer = {
+                next: (res: any) => {
+                    console.log(res.total.percent);
+                },
+                error: (error: any) => {
+                    console.log(error.message);
+                    reject(error);
+                    // TODO 重新上传
+                },
+                complete: (res: any) => {
+                    console.log(JSON.stringify(res));
+                    resolve(res);
+                }
+            };
+            const observable = qiniu.upload(file, key, token, putExtra, config);
+            const subscription = observable.subscribe(observer);
+        });
     }
 }
 

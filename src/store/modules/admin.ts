@@ -16,7 +16,7 @@ import config from '@/config/config.default';
     namespaced: true,
     name: 'admin'
 })
-export default class Test extends VuexModule {
+export default class Admin extends VuexModule {
     token = '';
     _id = '';
     userInfo = {

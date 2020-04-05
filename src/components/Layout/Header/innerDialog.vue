@@ -1,32 +1,35 @@
 <template>
     <div class="inner-dialog-wrapper">
         <!-- 修改密码内层弹窗 -->
-        <el-dialog :width="dialogWidth" :title="dialogTitle" :visible.sync="innerVisible">
+        <el-dialog
+            :width="dialogWidth"
+            :title="dialogTitle"
+            :visible.sync="innerVisible"
+            :close-on-click-modal="false"
+            :destroy-on-close="true"
+            :show-close="false"
+        >
             <el-form :model="form" class="mini-padding" ref="ruleForm" :rules="rules">
                 <el-form-item label="原密码" :label-width="formLabelWidth" prop="password">
-                    <el-input
-                        type="password"
-                        v-model="form.old_password"
-                        autocomplete="off"
-                    ></el-input>
+                    <el-input type="password" v-model="form.password" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="新密码" :label-width="formLabelWidth" prop="newPassword">
                     <el-input
                         type="password"
-                        v-model="form.new_password"
+                        v-model="form.newPassword"
                         autocomplete="off"
                     ></el-input>
                 </el-form-item>
                 <el-form-item label="确认密码" :label-width="formLabelWidth" prop="confirmPassword">
                     <el-input
                         type="password"
-                        v-model="form.comfirm_password"
+                        v-model="form.confirmPassword"
                         autocomplete="off"
                     ></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
+                <el-button @click="closeInnerDialog">取 消</el-button>
                 <el-button type="success" @click="handleModifyPassword">确 定</el-button>
             </div>
         </el-dialog>
@@ -44,10 +47,11 @@ export default class InnerDialog extends Vue {
     private dialogWidth = '20%';
     private dialogTitle = '修改密码';
     private innerVisible = false;
+    // form字段和rules字段保持一致
     private form = {
-        old_password: '',
-        new_password: '',
-        comfirm_password: ''
+        password: '',
+        newPassword: '',
+        confirmPassword: ''
     };
     private rules = {
         password: [
@@ -72,21 +76,36 @@ export default class InnerDialog extends Vue {
     }
     public validateNewPassword(rule: any, value: string, cb: Function) {
         const { pattern, message } = (this as any).$rules.password;
-        if (!pattern.test(value)) {
+        if (value === this.form.password) {
+            cb(new Error('新密码不能与旧密码相同'));
+        } else if (!pattern.test(value)) {
             cb(new Error(message));
         }
         cb();
     }
     public validateConfirmPassword(rule: any, value: string, cb: Function) {
-        if (value !== this.form.new_password) {
+        if (value !== this.form.newPassword) {
             cb(new Error('两次输入的密码不相同'));
         }
         cb();
     }
+    public closeInnerDialog() {
+        this.form = {
+            password: '',
+            newPassword: '',
+            confirmPassword: ''
+        };
+        this.innerVisible = false;
+    }
     public handleModifyPassword() {
-        (this.$refs['ruleForm'] as any).validate((valid: boolean) => {
+        (this.$refs['ruleForm'] as any).validate(async (valid: boolean) => {
             if (valid) {
-                // TODO update password
+                const data = await request.updatePassword(this.username, this.form.newPassword);
+                if (data.code === 0) {
+                    this.$message((this as any).$rules.message(data.message));
+                } else {
+                    this.$message((this as any).$rules.message(data.message, 'error'));
+                }
             } else {
                 this.$message((this as any).$rules.message('请填写正确密码', 'error'));
             }
