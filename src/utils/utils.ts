@@ -1,6 +1,12 @@
 class Utils {
+    // 记得revokeObjectURL
     public arrayBufferToBlob(arraybuffer: ArrayBuffer): string {
         const blob = new Blob([arraybuffer]);
+        const url = window.URL.createObjectURL(blob);
+        return url;
+    }
+    public fileToBlob(file: File): string {
+        const blob = new Blob([file]);
         const url = window.URL.createObjectURL(blob);
         return url;
     }

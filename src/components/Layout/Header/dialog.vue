@@ -6,7 +6,12 @@
                     <span>头像</span>
                     <img :src="form.avatar" alt="avatar" />
                     <!-- TODO avatar -->
-                    <el-button type="primary" icon="upload" @click="openUploadFileDialog" plain>
+                    <el-button
+                        type="primary"
+                        icon="el-icon-upload2"
+                        @click="openUploadFileDialog"
+                        plain
+                    >
                         更换头像
                     </el-button>
                 </div>
@@ -43,6 +48,9 @@
             :formLabelWidth="formLabelWidth"
             :username="form.username"
         ></inner-dialog>
+        <upload-dialog ref="uploadDialog" @uploadSuccess="openImageCropper">
+            <image-cropper ref="imageCropper"></image-cropper>
+        </upload-dialog>
     </div>
 </template>
 
@@ -54,10 +62,14 @@ import { getModule } from 'vuex-module-decorators';
 import AdminModule from '@/store/modules/admin';
 import { UPDATE_ADMIN_INFO } from '@/store/types';
 import InnerDialog from './innerDialog.vue';
+import UploadDialog from '@/components/common/upload.vue';
+import ImageCropper from '@/components/common/imageCropper.vue';
 
 @Component({
     components: {
-        InnerDialog
+        InnerDialog,
+        UploadDialog,
+        ImageCropper
     }
 })
 export default class ProfileDialog extends Vue {
@@ -89,6 +101,7 @@ export default class ProfileDialog extends Vue {
         ]) as any;
     }
     public async validateUsername(rule: any, value: string, cb: Function) {
+        if (value === this.admin.userInfo.username) cb();
         const { pattern, message } = (this as any).$rules.xss;
         if (pattern.test(value)) {
             return cb(new Error(message));
@@ -125,6 +138,14 @@ export default class ProfileDialog extends Vue {
     public openPasswordModifiedDialog() {
         (this.$refs['innerDialog'] as any).innerVisible = true;
     }
+    public openUploadFileDialog() {
+        (this.$refs['uploadDialog'] as any).dialogVisible = true;
+    }
+    // 打开图片裁剪dialog
+    public openImageCropper(url: string) {
+        console.log(url);
+        (this.$refs['imageCropper'] as any).dialogVisible = true;
+    }
 }
 </script>
 <style lang="scss" scoped>
@@ -156,6 +177,9 @@ export default class ProfileDialog extends Vue {
         ::v-deep .el-button {
             padding: 6px 10px;
             margin-top: 30px;
+            span {
+                margin-left: 0 !important;
+            }
         }
     }
     ::v-deep .el-input,

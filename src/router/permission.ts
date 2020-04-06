@@ -31,6 +31,9 @@ router.beforeEach(async (to, from, next) => {
             next({ path: '/login', replace: true });
         }
     } else {
+        if (to.name == null && to.path === '/') {
+            next({ path: '/login', replace: true });
+        }
         if (token != null) {
             // 手动刷新 或 从localhost:8080跳转
             if (from.name == null && from.path === '/') {
@@ -42,9 +45,6 @@ router.beforeEach(async (to, from, next) => {
                 }
             }
         } else {
-            if (to.name == null && to.path === '/') {
-                next({ path: '/login', replace: true });
-            }
             next();
         }
     }

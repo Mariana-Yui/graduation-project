@@ -1,6 +1,6 @@
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 import request from '@/utils/axios';
-import { GET_UPTOKEN, SET_UPTOKEN, SET_UPTOKEN_SYNC } from '../types';
+import { SET_UPTOKEN, SET_UPTOKEN_SYNC } from '../types';
 import utils from '@/utils/utils';
 
 @Module({

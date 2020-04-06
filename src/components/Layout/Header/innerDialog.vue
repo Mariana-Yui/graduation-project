@@ -6,6 +6,7 @@
             :title="dialogTitle"
             :visible.sync="innerVisible"
             :close-on-click-modal="false"
+            :close-on-press-escape="false"
             :destroy-on-close="true"
             :show-close="false"
         >
