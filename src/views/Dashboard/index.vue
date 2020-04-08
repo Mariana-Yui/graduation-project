@@ -1,15 +1,23 @@
 <template>
     <div class="dashboard-wrapper">
-        <dashboard-layout></dashboard-layout>
+        <dashboard-layout>
+            <!-- 需要用template模板包裹 -->
+            <template v-slot:content>
+                <dashboard-content></dashboard-content>
+            </template>
+        </dashboard-layout>
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import DashboardLayout from './layout.vue';
+import DashboardContent from '@/components/Main/index.vue';
+
 @Component({
     components: {
-        DashboardLayout
+        DashboardLayout,
+        DashboardContent
     }
 })
 export default class Dashboard extends Vue {}

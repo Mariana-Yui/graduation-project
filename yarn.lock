@@ -4518,7 +4518,7 @@ mkdirp@^0.5.1, mkdirp@^0.5.3, mkdirp@~0.5.1:
   dependencies:
     minimist "^1.2.5"
 
-moment@*:
+moment@*, moment@^2.24.0:
   version "2.24.0"
   resolved "http://r.cnpmjs.org/moment/download/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
   integrity sha1-DQVdU/UFKqZTyfbraLtdEr9cK1s=
@@ -7241,6 +7241,11 @@ vue-class-component@^7.1.0, vue-class-component@^7.2.2:
   version "7.2.3"
   resolved "https://registry.npm.taobao.org/vue-class-component/download/vue-class-component-7.2.3.tgz#a5b1abd53513a72ad51098752e2dedd499807cca"
   integrity sha1-pbGr1TUTpyrVEJh1Li3t1JmAfMo=
+
+vue-cropper@^0.5.2:
+  version "0.5.2"
+  resolved "http://r.cnpmjs.org/vue-cropper/download/vue-cropper-0.5.2.tgz#069b2ffe5336b3f800d3049df2b0746263bd8642"
+  integrity sha1-Bpsv/lM2s/gA0wSd8rB0YmO9hkI=
 
 vue-eslint-parser@^7.0.0:
   version "7.0.0"

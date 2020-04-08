@@ -49,7 +49,7 @@
             :username="form.username"
         ></inner-dialog>
         <upload-dialog ref="uploadDialog" @uploadSuccess="openImageCropper">
-            <image-cropper ref="imageCropper"></image-cropper>
+            <image-cropper ref="imageCropper" @changeAvatar="handleChangeAvatar"></image-cropper>
         </upload-dialog>
     </div>
 </template>
@@ -60,7 +60,8 @@ import * as _ from 'lodash';
 import request from '@/utils/axios';
 import { getModule } from 'vuex-module-decorators';
 import AdminModule from '@/store/modules/admin';
-import { UPDATE_ADMIN_INFO } from '@/store/types';
+import UploadModule from '@/store/modules/upload';
+import { UPDATE_ADMIN_INFO, SET_UPLOAD_IMAGE_URL } from '@/store/types';
 import InnerDialog from './innerDialog.vue';
 import UploadDialog from '@/components/common/upload.vue';
 import ImageCropper from '@/components/common/imageCropper.vue';
@@ -73,6 +74,7 @@ import ImageCropper from '@/components/common/imageCropper.vue';
     }
 })
 export default class ProfileDialog extends Vue {
+    private upload: UploadModule;
     private admin: AdminModule;
     private dialogWidth = '30%';
     private form = { username: '', email: '', phone: '', avatar: '', description: '' };
@@ -99,6 +101,7 @@ export default class ProfileDialog extends Vue {
             'avatar',
             'description'
         ]) as any;
+        this.upload = getModule(UploadModule, this.$store);
     }
     public async validateUsername(rule: any, value: string, cb: Function) {
         if (value === this.admin.userInfo.username) cb();
@@ -143,8 +146,11 @@ export default class ProfileDialog extends Vue {
     }
     // 打开图片裁剪dialog
     public openImageCropper(url: string) {
-        console.log(url);
         (this.$refs['imageCropper'] as any).dialogVisible = true;
+        this.upload[SET_UPLOAD_IMAGE_URL](url);
+    }
+    public handleChangeAvatar(avatar_url: string) {
+        this.form.avatar = avatar_url;
     }
 }
 </script>

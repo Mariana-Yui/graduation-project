@@ -52,6 +52,7 @@ router.beforeEach(async (to, from, next) => {
 
 router.afterEach((to, from) => {
     NProgress.done(true);
+    NProgress.remove();
 });
 
 export default router;

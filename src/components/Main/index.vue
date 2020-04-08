@@ -1,14 +1,14 @@
 <template>
-    <div class="dashboard-footer">Footer</div>
+    <div class="article-main-wrapper">Content</div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 @Component
-export default class App extends Vue {}
+export default class Content extends Vue {}
 </script>
 <style lang="scss" scoped>
-.dashboard-footer {
-    flex: 0 0 30px;
+.article-main-wrapper {
+    flex: 1;
 }
 </style>

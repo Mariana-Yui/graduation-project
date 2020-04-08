@@ -8,6 +8,7 @@
                     <span class="logo-text-2">:文章管理系统</span>
                 </div>
             </div>
+            <i :class="iconClass" @click="toggleMenu"></i>
             <el-submenu index="2" class="right">
                 <template slot="title">{{ username }}</template>
                 <el-menu-item index="profile" @click="handleOpenDialog">
@@ -26,7 +27,8 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import AdminModule from '@/store/modules/admin';
-import { ADMIN_LOGOUT } from '@/store/types';
+import MenuModule from '@/store/modules/menu';
+import { ADMIN_LOGOUT, TOGGLE_MENU } from '@/store/types';
 import ProfileDialog from './dialog.vue';
 @Component({
     components: {
@@ -34,28 +36,36 @@ import ProfileDialog from './dialog.vue';
     }
 })
 export default class DashboardHeader extends Vue {
-    private adminModule: AdminModule;
+    private admin: AdminModule;
+    private menu: MenuModule;
     private profile_text = '个人资料';
     private logout_text = '退出';
     private imgPath = require('@/assets/img/logo.png');
     private dialogFormVisible = false;
     get username() {
-        return this.adminModule.userInfo.username || '我是一个杀手';
+        return this.admin.userInfo.username || '';
     }
     get avatar() {
         return {
-            'background-image': `url(${this.adminModule.userInfo.avatar})`
+            'background-image': `url(${this.admin.userInfo.avatar})`
         };
     }
+    get iconClass() {
+        return this.menu.isCollapse ? 'el-icon-s-unfold icon-common' : 'el-icon-s-fold icon-common';
+    }
     public created() {
-        this.adminModule = getModule(AdminModule, this.$store);
+        this.admin = getModule(AdminModule, this.$store);
+        this.menu = getModule(MenuModule, this.$store);
     }
     public handleLogout() {
-        this.adminModule[ADMIN_LOGOUT]();
+        this.admin[ADMIN_LOGOUT]();
         this.$router.push({ path: '/login' });
     }
     public handleOpenDialog() {
         (this.$refs['profileDialog'] as any).dialogFormVisible = true;
+    }
+    public toggleMenu() {
+        this.menu[TOGGLE_MENU]();
     }
 }
 </script>
@@ -63,6 +73,8 @@ export default class DashboardHeader extends Vue {
 @import '~@/assets/css/font.scss';
 .dashboard-header {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    flex-shrink: 0;
+    flex-grow: 0;
     .logo {
         float: left;
         height: 60px;
@@ -85,6 +97,13 @@ export default class DashboardHeader extends Vue {
                 font: 30px 'LongCang';
             }
         }
+    }
+    .icon-common {
+        font-size: 30px;
+        margin-left: 15px;
+        padding: 15px 15px;
+        cursor: pointer;
+        outline-style: none;
     }
     .avatar {
         width: 40px;

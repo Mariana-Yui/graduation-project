@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 class Utils {
     // 记得revokeObjectURL
     public arrayBufferToBlob(arraybuffer: ArrayBuffer): string {
@@ -43,6 +45,13 @@ class Utils {
         keys.forEach((k: string) => {
             window.localStorage.removeItem(k);
         });
+    }
+    public getRandomImgName() {
+        const date = moment().format('YYYY/MM/DD/');
+        const random = Math.random()
+            .toString(16)
+            .slice(2);
+        return date + random + '80*80.jpg';
     }
 }
 

@@ -108,15 +108,13 @@ class Request {
         return new Promise((resolve, reject) => {
             const observer = {
                 next: (res: any) => {
-                    console.log(res.total.percent);
+                    // console.log(res.total.percent);
                 },
                 error: (error: any) => {
                     console.log(error.message);
                     reject(error);
-                    // TODO 重新上传
                 },
                 complete: (res: any) => {
-                    console.log(JSON.stringify(res));
                     resolve(res);
                 }
             };

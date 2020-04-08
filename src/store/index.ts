@@ -1,6 +1,9 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import admin from './modules/admin';
+import qiniu from './modules/qiniu';
+import upload from './modules/upload';
+import menu from './modules/menu';
 
 Vue.use(Vuex);
 
@@ -9,6 +12,9 @@ export default new Vuex.Store({
     mutations: {},
     actions: {},
     modules: {
-        admin
+        admin,
+        qiniu,
+        upload,
+        menu
     }
 });
