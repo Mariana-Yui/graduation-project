@@ -6,6 +6,7 @@ Vue.use(VueRouter);
 // 路由懒加载
 const Login = () => import('@/views/Login/index.vue');
 const Dashboard = () => import('@/views/Dashboard/index.vue');
+const HomePage = () => import('@/components/Main/index.vue');
 
 const routes = [
     {
@@ -17,9 +18,16 @@ const routes = [
         path: '/dashboard',
         name: 'Dashboard',
         component: Dashboard,
+        redirect: '/dashboard/index',
         meta: {
             requiresAuth: true
-        }
+        },
+        children: [
+            {
+                path: 'index',
+                component: HomePage
+            }
+        ]
     }
 ];
 

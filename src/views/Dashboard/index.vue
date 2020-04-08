@@ -3,7 +3,7 @@
         <dashboard-layout>
             <!-- 需要用template模板包裹 -->
             <template v-slot:content>
-                <dashboard-content></dashboard-content>
+                <router-view></router-view>
             </template>
         </dashboard-layout>
     </div>
@@ -12,12 +12,10 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import DashboardLayout from './layout.vue';
-import DashboardContent from '@/components/Main/index.vue';
 
 @Component({
     components: {
-        DashboardLayout,
-        DashboardContent
+        DashboardLayout
     }
 })
 export default class Dashboard extends Vue {}
