@@ -1,11 +1,30 @@
 <template>
-    <div class="article-main-wrapper">Content</div>
+    <div class="main-page-wrapper">
+        <component :is="currentRole"></component>
+    </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-@Component
-export default class Content extends Vue {}
+import AdminPage from './role/admin.vue';
+import AuthorPage from './role/author.vue';
+import { getModule } from 'vuex-module-decorators';
+import AdminModule from '@/store/modules/admin';
+
+@Component({
+    components: {
+        AdminPage,
+        AuthorPage
+    }
+})
+export default class HomePage extends Vue {
+    private currentRole!: string;
+
+    public created() {
+        const admin = getModule(AdminModule, this.$store);
+        this.currentRole = admin.userInfo.role === 'admin' ? 'AdminPage' : 'AuthorPage';
+    }
+}
 </script>
 <style lang="scss" scoped>
 .article-main-wrapper {

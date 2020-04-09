@@ -1,10 +1,15 @@
 /* eslint-disable indent */
 import CryptoJS from 'crypto-js';
+import * as qiniu from 'qiniu-js';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
 import router from '../router';
 import config from '../config/config.default';
 import utils from './utils';
-import * as qiniu from 'qiniu-js';
+import { getModule } from 'vuex-module-decorators';
+import AdminModule from '@/store/modules/admin';
+import store from '@/store';
+import { ADMIN_LOGOUT } from '@/store/types';
+const admin = getModule(AdminModule, store);
 
 class Request {
     private instance: AxiosInstance;
@@ -38,7 +43,8 @@ class Request {
                                     query: { redirect: '/dashboard' }
                                 });
                             }
-                            utils.removeItem('token', '_id', 'userInfo');
+                            // utils.removeItem('token', '_id', 'userInfo');
+                            admin[ADMIN_LOGOUT]();
                             break;
                         }
                     }

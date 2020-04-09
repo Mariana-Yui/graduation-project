@@ -11,3 +11,6 @@ export const SET_UPTOKEN_SYNC = 'setUpTokenSync';
 export const SET_UPLOAD_IMAGE_URL = 'setImageUrl';
 
 export const TOGGLE_MENU = 'toggleCollapse';
+
+export const SET_DYNAMIC_ROUTES = 'setDynamicRoutes';
+export const SET_USER_ROLE = 'setUserRole';

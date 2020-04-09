@@ -89,12 +89,14 @@ export default class DashboardHeader extends Vue {
         }
         .logo-text {
             .logo-text-1 {
-                font: 30px 'MamaLove';
+                /* font-family: 'MamaLove'; */
+                /* font-size: 30px; */
                 display: inline-block;
                 margin-top: 10px;
             }
             .logo-text-2 {
-                font: 30px 'LongCang';
+                font-family: 'LongCang';
+                font-size: 30px;
             }
         }
     }

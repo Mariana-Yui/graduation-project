@@ -1,36 +1,49 @@
 <template>
     <div class="nav-menu-wrapper">
-        <el-menu default-active="1-4-1" class="el-article-menu-vertical" :collapse="isCollapse">
-            <el-submenu index="1">
+        <el-menu
+            default-active="1"
+            class="el-article-menu-vertical"
+            :collapse="isCollapse"
+            :unique-opened="true"
+        >
+            <el-menu-item index="1">
+                <i class="el-icon-menu"></i>
+                <span>首页</span>
+            </el-menu-item>
+            <el-submenu index="2">
                 <template slot="title">
-                    <i class="el-icon-location"></i>
-                    <span slot="title">导航一</span>
+                    <i class="el-icon-s-custom"></i>
+                    <span slot="title">人员管理</span>
                 </template>
-                <el-menu-item-group>
-                    <span slot="title">分组一</span>
-                    <el-menu-item index="1-1">选项1</el-menu-item>
-                    <el-menu-item index="1-2">选项2</el-menu-item>
-                </el-menu-item-group>
-                <el-menu-item-group title="分组2">
-                    <el-menu-item index="1-3">选项3</el-menu-item>
-                </el-menu-item-group>
-                <el-submenu index="1-4">
-                    <span slot="title">选项4</span>
-                    <el-menu-item index="1-4-1">选项1</el-menu-item>
+                <el-menu-item index="2-1">总用户列表</el-menu-item>
+                <el-menu-item index="2-2">管理员列表(仅admin可见)</el-menu-item>
+            </el-submenu>
+            <el-submenu index="3">
+                <template slot="title">
+                    <i class="el-icon-document"></i>
+                    <span slot="title">文章管理</span>
+                </template>
+                <el-submenu index="3-1">
+                    <template slot="title">阅读文章管理</template>
+                    <el-menu-item index="3-1-1">发布文章</el-menu-item>
+                    <el-menu-item index="3-1-2">文章列表</el-menu-item>
+                </el-submenu>
+                <el-submenu index="3-2">
+                    <template slot="title">音乐文章管理</template>
+                    <el-menu-item index="3-2-1">发布文章</el-menu-item>
+                    <el-menu-item index="3-2-2">文章列表</el-menu-item>
+                </el-submenu>
+                <el-submenu index="3-3">
+                    <template slot="title">电影文章管理</template>
+                    <el-menu-item index="3-3-1">发布文章</el-menu-item>
+                    <el-menu-item index="3-3-2">文章列表</el-menu-item>
+                </el-submenu>
+                <el-submenu index="3-4">
+                    <template slot="title">电台文章管理</template>
+                    <el-menu-item index="3-4-1">发布文章</el-menu-item>
+                    <el-menu-item index="3-4-2">文章列表</el-menu-item>
                 </el-submenu>
             </el-submenu>
-            <el-menu-item index="2">
-                <i class="el-icon-menu"></i>
-                <span slot="title">导航二</span>
-            </el-menu-item>
-            <el-menu-item index="3" disabled>
-                <i class="el-icon-document"></i>
-                <span slot="title">导航三</span>
-            </el-menu-item>
-            <el-menu-item index="4">
-                <i class="el-icon-setting"></i>
-                <span slot="title">导航四</span>
-            </el-menu-item>
         </el-menu>
     </div>
 </template>
