@@ -14,3 +14,4 @@ export const TOGGLE_MENU = 'toggleCollapse';
 
 export const SET_DYNAMIC_ROUTES = 'setDynamicRoutes';
 export const SET_USER_ROLE = 'setUserRole';
+export const GENERATE_ROUTES = 'generateRoutes';

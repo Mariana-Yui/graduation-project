@@ -1,11 +1,11 @@
 <template>
-    <div>BroadcastArticle</div>
+    <div></div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 
 @Component
-export default class App extends Vue {}
+export default class Film extends Vue {}
 </script>
 <style lang="scss" scoped></style>

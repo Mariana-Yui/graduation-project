@@ -4,6 +4,7 @@ import admin from './modules/admin';
 import qiniu from './modules/qiniu';
 import upload from './modules/upload';
 import menu from './modules/menu';
+import permission from './modules/permission';
 
 Vue.use(Vuex);
 
@@ -15,6 +16,7 @@ export default new Vuex.Store({
         admin,
         qiniu,
         upload,
-        menu
+        menu,
+        permission
     }
 });

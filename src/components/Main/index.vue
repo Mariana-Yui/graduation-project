@@ -26,8 +26,4 @@ export default class HomePage extends Vue {
     }
 }
 </script>
-<style lang="scss" scoped>
-.article-main-wrapper {
-    flex: 1;
-}
-</style>
+<style lang="scss" scoped></style>

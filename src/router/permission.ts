@@ -7,12 +7,7 @@ import request from '@/utils/axios';
 import AdminModule from '@/store/modules/admin';
 import PermissionModule from '@/store/modules/permission';
 import store from '@/store';
-import {
-    GET_INFO_FROM_LOCAL,
-    ADMIN_LOGOUT,
-    SET_USER_ROLE,
-    SET_DYNAMIC_ROUTES
-} from '@/store/types';
+import { GET_INFO_FROM_LOCAL, ADMIN_LOGOUT, SET_USER_ROLE, GENERATE_ROUTES } from '@/store/types';
 
 const admin = getModule(AdminModule, store);
 const permission = getModule(PermissionModule, store);
@@ -20,7 +15,8 @@ const permission = getModule(PermissionModule, store);
 async function addDynamicRoutes() {
     try {
         const role = await permission[SET_USER_ROLE]();
-        permission[SET_DYNAMIC_ROUTES]();
+        const dynamicRoutes = await permission[GENERATE_ROUTES]();
+        router.$addRoutes(permission.dynamicRoutes);
     } catch (error) {
         // 本地没有userInfo, 重新登录
         console.log(error);
@@ -40,16 +36,20 @@ router.beforeEach(async (to, from, next) => {
     // 不在路由中的统一跳转404
     if (whiteList.indexOf(to.path) === -1) {
         // 首次进入或手动刷新时重新添加动态路由
+        console.log(permission.role);
         if (permission.role === '') {
             await addDynamicRoutes();
         }
         if (token != null) {
             if (from.path === '/login') {
+                if (!to.matched.some((record) => record.meta.requiresAuth)) {
+                    next({ ...to, replace: true }); // 当前导航被中断,from实际上没有变
+                }
                 next();
             } else {
                 try {
                     const data = await request.getToken();
-                    if (to.matched.some((record) => record.meta.requiresAuth)) {
+                    if (!to.matched.some((record) => record.meta.requiresAuth)) {
                         next({ ...to, replace: true }); // 当前导航被中断,from实际上没有变
                     }
                     next();

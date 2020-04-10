@@ -44,6 +44,7 @@ export default class DashboardLayout extends Vue {
     .main-content {
         flex: 1;
         display: flex;
+        height: calc(100vh - 61px - 30px);
     }
 }
 </style>
