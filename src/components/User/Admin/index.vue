@@ -1,13 +1,13 @@
 <template>
     <el-scrollbar :native="false" :noresize="true" class="admin-list-scrollbar">
         <div class="admin-list-wrapper">
-            <el-row class="search-input-suffix">
-                <el-col :span="1">搜索:</el-col>
-                <el-col :span="4">
+            <el-row class="search-input-suffix" type="flex" align="middle">
+                <el-col :span="1" class="search-text">搜索:</el-col>
+                <el-col :span="4" class="search-input">
                     <el-input
                         placeholder="请输入用户名"
                         prefix-icon="el-icon-search"
-                        v-model="input2"
+                        v-model="input"
                     >
                     </el-input>
                 </el-col>
@@ -17,168 +17,207 @@
             </el-row>
             <el-row class="admin-table">
                 <el-col :span="24">
-                    <el-table :data="tableData" border style="width: 100%">
-                        <el-table-column prop="date" label="日期" width="180"> </el-table-column>
-                        <el-table-column prop="name" label="姓名" width="180"> </el-table-column>
-                        <el-table-column prop="address" label="地址"> </el-table-column>
+                    <el-table :data="tableData" border style="width: 99.5%">
+                        <el-table-column prop="avatar" label="头像" width="100">
+                            <template slot-scope="scope">
+                                <div
+                                    class="scope-avatar"
+                                    :style="{ backgroundImage: `url(${scope.row.avatar})` }"
+                                ></div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="username" label="用户名"></el-table-column>
+                        <el-table-column prop="role_name" label="用户类型"></el-table-column>
+                        <el-table-column prop="phone" label="联系方式"></el-table-column>
+                        <el-table-column prop="email" label="邮箱"></el-table-column>
+                        <el-table-column prop="create_time" label="创建时间"></el-table-column>
+                        <el-table-column prop="enable" label="是否有效">
+                            <template slot-scope="scope">
+                                <el-switch
+                                    v-model="scope.row.enable"
+                                    active-color="#13ce66"
+                                    inactive-color="#ff4949"
+                                    @change="handleSwitchChange(scope)"
+                                >
+                                </el-switch>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="操作">
+                            <template slot-scope="scope">
+                                <el-button type="text" size="small" @click="handleClick(scope)">
+                                    编辑
+                                </el-button>
+                            </template>
+                        </el-table-column>
                     </el-table>
                 </el-col>
             </el-row>
+            <el-row>
+                <el-col :span="24">
+                    <el-pagination
+                        class="search-pagination-bar"
+                        @size-change="handleSizeChange"
+                        @current-change="handleCurrentChange"
+                        :current-page="currentPage"
+                        :page-sizes="pageSizes"
+                        :page-size="pageSize"
+                        :total="total"
+                        layout="total, sizes, prev, pager, next"
+                    >
+                    </el-pagination>
+                </el-col>
+            </el-row>
         </div>
+        <common-dialog
+            :dialogVisible="dialogVisible"
+            :form="currentUser"
+            :isAdmin="true"
+            @close-dialog="handleCloseDialog"
+            v-if="currentUser.username"
+        >
+            <template v-slot:title>
+                <div class="slot-title">{{ currentUser.username }}的个人资料</div>
+            </template>
+        </common-dialog>
     </el-scrollbar>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import * as _ from 'lodash';
+import request from '@/utils/axios';
+import CommonDialog from '@/components/common/dialog.vue';
 
-@Component
+@Component({
+    components: {
+        CommonDialog
+    }
+})
 export default class AdminUser extends Vue {
-    private tableData = [
-        {
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-            date: '2016-05-04',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1517 弄'
-        },
-        {
-            date: '2016-05-01',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1519 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-        },
-        {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
+    private pageSizes = [20, 50, 100, 200];
+    private pageSize = 20;
+    private currentPage = 1;
+    private total = 0;
+    private tableData: any[] = [];
+    private input = '';
+    private currentUser = {};
+    private dialogVisible = false;
+    private currentIndex = 0;
+
+    public async created() {
+        const info = await request.getTotalNumber();
+        if (info.code === 0) {
+            this.total = info.info.total;
         }
-    ];
+        this.changePagination();
+    }
+    public async changePagination() {
+        const info = await request.getCurrentPageList(this.pageSize, this.currentPage);
+        if (info.code === 0) {
+            this.tableData = info.info;
+        }
+    }
+    public handleSizeChange(newSize: any) {
+        this.pageSize = newSize;
+        this.changePagination();
+    }
+    public async handleCurrentChange(curPage: any) {
+        this.currentPage = curPage;
+        this.changePagination();
+    }
+    public async handleSwitchChange(scope: any) {
+        this.currentIndex = scope.$index; // 当前索引
+        this.tableData[this.currentIndex].enable = scope.row.enable;
+        const { username, enable } = scope.row;
+        const data = await request.toggleUserStatus(username, enable);
+        if (data.code === 0) {
+            this.$message((this as any).$rules.message('修改用户状态成功'));
+        } else {
+            this.$message((this as any).$rules.message('修改用户状态失败, 请刷新重试', 'error'));
+        }
+    }
+    public handleClick(scope: any) {
+        const profile = _.pick(scope.row, ['username', 'phone', 'email', 'description']);
+        this.currentUser = profile;
+        this.currentIndex = scope.$index; // 当前索引
+        this.dialogVisible = true;
+    }
+    public async handleCloseDialog(updated: any) {
+        if (updated !== '') {
+            const username = this.tableData[this.currentIndex].username;
+            this.tableData.splice(this.currentIndex, 1, {
+                ...this.tableData[this.currentIndex],
+                ...updated
+            });
+            const data = await request.updateUserInfo(this.tableData[this.currentIndex]);
+            if (data.code === 0) {
+                this.$message((this as any).$rules.message('修改用户资料成功'));
+            } else {
+                this.$message(
+                    (this as any).$rules.message('修改用户状态失败, 请刷新重试', 'error')
+                );
+            }
+        }
+        this.dialogVisible = false;
+        // 清空当前个人资料, 让dialog组件重新create
+        this.currentUser = {};
+    }
 }
 </script>
 <style lang="scss" scoped>
+@import '~@/assets/css/default.scss';
+
 .admin-list-scrollbar {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     .admin-list-wrapper {
-        overflow: hidden;
         .search-input-suffix {
-            display: flex;
-            align-items: center;
+            margin: 50px 0;
+            .search-text {
+                color: $gray;
+                text-align: center;
+                margin-right: 20px;
+            }
+            .search-input {
+                margin-right: 30px;
+            }
         }
+        .search-pagination-bar {
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 30px;
+            margin-top: 30px;
+        }
+    }
+    .admin-table {
+        .scope-avatar {
+            margin: 0 auto;
+            background-size: cover;
+            background-position-x: 50%;
+            background-repeat: no-repeat;
+            width: 40px;
+            height: 40px;
+            border-radius: 50% 50%;
+        }
+    }
+    .slot-title {
+        color: $gray;
+        font-size: 25px;
+        margin-bottom: $margin-bottom;
+        text-align: center;
     }
     ::v-deep .el-scrollbar__wrap {
         overflow-x: hidden;
         overflow-y: scroll;
+    }
+    ::v-deep .el-scrollbar__bar.is-vertical {
+        width: 10px !important;
+        transition: background-color 0.3s;
+        .el-scrollbar__thumb {
+            background-color: $lightgray;
+        }
+    }
+    ::v-deep .el-dialog__body {
+        padding-top: 0 !important;
     }
 }
 </style>

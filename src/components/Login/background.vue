@@ -38,7 +38,8 @@ export default class LoginBackground extends Vue {
     }
     // 定时任务, 每过config.time轮播图片
     private scheduleTask() {
-        setInterval(async () => {
+        const timer = setInterval(async () => {
+            if (this.$route.path !== '/login') clearInterval(timer);
             this.fadeout = false;
             setTimeout(async () => {
                 const url2 = this.bg2['background-image'].slice(4, -1);

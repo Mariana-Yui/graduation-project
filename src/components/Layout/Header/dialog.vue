@@ -5,7 +5,6 @@
                 <div class="profile-avatar">
                     <span>头像</span>
                     <img :src="form.avatar" alt="avatar" />
-                    <!-- TODO avatar -->
                     <el-button
                         type="primary"
                         icon="el-icon-upload2"

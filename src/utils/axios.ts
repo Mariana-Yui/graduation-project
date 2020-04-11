@@ -128,6 +128,29 @@ class Request {
             const subscription = observable.subscribe(observer);
         });
     }
+    /*******************************管理员列表**************************************/
+    public async getCurrentPageList(size: number, page: number) {
+        const { data } = await this.instance.get('/user/admin/getlist', {
+            params: {
+                size,
+                page
+            }
+        });
+        return data;
+    }
+    public async getTotalNumber() {
+        const { data } = await this.instance.get('/user/admin/gettotal');
+        return data;
+    }
+    public async toggleUserStatus(username: string, enable: false) {
+        const { data } = await this.instance.get('/user/admin/togglestatus', {
+            params: {
+                username,
+                enable
+            }
+        });
+        return data;
+    }
 }
 
 const request = new Request();
