@@ -53,7 +53,24 @@ import request from '@/utils/axios';
 
 @Component
 export default class ProfileDialog extends Vue {
-    @Prop() form!: { username: string; email: string; phone: string; description: string };
+    @Prop({
+        default: () => ({
+            username: '',
+            email: '',
+            phone: '',
+            description: '',
+            role: 'author',
+            role_name: '管理员'
+        })
+    })
+    form!: {
+        username: string;
+        email: string;
+        phone: string;
+        description: string;
+        role: string;
+        role_name: string;
+    };
     @Prop() dialogVisible: boolean;
     @Prop({ default: false }) isAdmin: boolean;
     private elForm = {
@@ -61,8 +78,8 @@ export default class ProfileDialog extends Vue {
         email: '',
         phone: '',
         description: '',
-        role: '',
-        role_name: ''
+        role: 'author',
+        role_name: '管理员'
     };
     private formLabelWidth = '80px';
     private dialogWidth = '30%';
@@ -78,7 +95,6 @@ export default class ProfileDialog extends Vue {
     };
 
     public created() {
-        console.log(this.elForm);
         this.elForm = Object.assign({}, this.elForm, this.form);
     }
     public async validateUsername(rule: any, value: string, cb: Function) {
@@ -106,10 +122,15 @@ export default class ProfileDialog extends Vue {
     public closeDialogOnly() {
         return '';
     }
-    @Emit('close-dialog')
     public triggerCloseDialog() {
-        this.elForm.role_name = this.elForm.role === 'admin' ? '管理员' : '用户';
-        return this.elForm;
+        (this.$refs['ruleForm'] as any).validate(async (valid: boolean) => {
+            if (valid) {
+                this.elForm.role_name = this.elForm.role === 'admin' ? '管理员' : '用户';
+                this.$emit('close-dialog', this.elForm);
+            } else {
+                this.$message((this as any).$rules.message('请填写有效信息', 'error'));
+            }
+        });
     }
 }
 </script>
@@ -123,6 +144,9 @@ export default class ProfileDialog extends Vue {
     ::v-deep .el-input,
     .el-textarea {
         width: 80%;
+    }
+    ::v-deep .el-dialog__body {
+        padding-bottom: 0 !important;
     }
 }
 </style>

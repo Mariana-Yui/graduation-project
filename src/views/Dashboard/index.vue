@@ -25,7 +25,7 @@ export default class Dashboard extends Vue {}
 .content-wrapper {
     flex: 1;
     margin: 10px 10px 0;
-    padding: 10px 10px 0;
+    padding: 10px 10px;
     border: 1px solid $lightgray;
     border-radius: 4px;
 }

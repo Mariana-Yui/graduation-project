@@ -151,6 +151,22 @@ class Request {
         });
         return data;
     }
+    public async getAdminByKeywords(input = '', size: number, page: number) {
+        const { data } = await this.instance.get('/user/admin/getadminbykeywords', {
+            params: {
+                input,
+                size,
+                page
+            }
+        });
+        return data;
+    }
+    public async createNewAdmin(info: any) {
+        const { data } = await this.instance.post('/user/admin/createnewadmin', {
+            info
+        });
+        return data;
+    }
 }
 
 const request = new Request();

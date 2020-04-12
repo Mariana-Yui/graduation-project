@@ -53,6 +53,16 @@ class Utils {
             .slice(2);
         return date + random + '80*80.jpg';
     }
+    public debounce(fn: Function, delay = 300) {
+        let timer: number;
+        return function(...args: any[]) {
+            clearTimeout(timer);
+            // 这里不用箭头函数的话外层要做一个let self = this的闭包
+            timer = setTimeout(() => {
+                fn.apply(this, args);
+            }, delay);
+        };
+    }
 }
 
 const utils = new Utils();

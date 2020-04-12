@@ -8,11 +8,12 @@
                         placeholder="请输入用户名"
                         prefix-icon="el-icon-search"
                         v-model="input"
+                        @input="handleInputUser"
                     >
                     </el-input>
                 </el-col>
                 <el-col :span="2">
-                    <el-button type="primary">新增</el-button>
+                    <el-button type="primary" @click="handleNewAdmin">新增</el-button>
                 </el-col>
             </el-row>
             <el-row class="admin-table">
@@ -73,10 +74,20 @@
             :form="currentUser"
             :isAdmin="true"
             @close-dialog="handleCloseDialog"
-            v-if="currentUser.username"
+            v-if="dialogVisible"
         >
             <template v-slot:title>
                 <div class="slot-title">{{ currentUser.username }}的个人资料</div>
+            </template>
+        </common-dialog>
+        <common-dialog
+            :dialogVisible="dialogVisible_2"
+            :isAdmin="true"
+            @close-dialog="handleCloseNewifyDialog"
+            v-if="dialogVisible_2"
+        >
+            <template v-slot:title>
+                <div class="slot-title">新建用户</div>
             </template>
         </common-dialog>
     </el-scrollbar>
@@ -85,8 +96,10 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import * as _ from 'lodash';
+import { Debounce, Bind } from 'lodash-decorators';
 import request from '@/utils/axios';
 import CommonDialog from '@/components/common/dialog.vue';
+import utils from '@/utils/utils';
 
 @Component({
     components: {
@@ -102,6 +115,7 @@ export default class AdminUser extends Vue {
     private input = '';
     private currentUser = {};
     private dialogVisible = false;
+    private dialogVisible_2 = false;
     private currentIndex = 0;
 
     public async created() {
@@ -137,7 +151,7 @@ export default class AdminUser extends Vue {
         }
     }
     public handleClick(scope: any) {
-        const profile = _.pick(scope.row, ['username', 'phone', 'email', 'description']);
+        const profile = _.pick(scope.row, ['username', 'phone', 'email', 'description', 'role']);
         this.currentUser = profile;
         this.currentIndex = scope.$index; // 当前索引
         this.dialogVisible = true;
@@ -159,8 +173,37 @@ export default class AdminUser extends Vue {
             }
         }
         this.dialogVisible = false;
-        // 清空当前个人资料, 让dialog组件重新create
+        // 清空当前个人资料
         this.currentUser = {};
+    }
+    @Bind()
+    @Debounce(500)
+    public async handleInputUser() {
+        const data = await request.getAdminByKeywords(
+            this.input.trim(),
+            this.pageSize,
+            this.currentPage
+        );
+        if (data.code === 0) {
+            this.tableData = data.info;
+        }
+    }
+    public handleNewAdmin() {
+        this.dialogVisible_2 = true;
+    }
+    public async handleCloseNewifyDialog(newUser: any) {
+        if (newUser !== '') {
+            const data = await request.createNewAdmin(newUser);
+            if (data.code === 0) {
+                this.$message((this as any).$rules.message(data.message));
+                // 这里也可以通过重新发送两次请求获取, 但是我不:D
+                this.tableData.push(data.info);
+                this.total++;
+            } else {
+                this.$message((this as any).$rules.message(data.message, 'error'));
+            }
+        }
+        this.dialogVisible_2 = false;
     }
 }
 </script>
