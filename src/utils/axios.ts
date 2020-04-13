@@ -167,6 +167,11 @@ class Request {
         });
         return data;
     }
+    /*******************************发布文章**************************************/
+    public async getAllUsername() {
+        const { data } = await this.instance.get('/article/publish/getallusername');
+        return data;
+    }
 }
 
 const request = new Request();

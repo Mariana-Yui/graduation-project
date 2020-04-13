@@ -36,6 +36,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { RouteConfig } from 'vue-router';
+import utils from '../../../utils/utils';
 
 @Component
 export default class MenuItem extends Vue {

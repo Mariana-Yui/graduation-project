@@ -1,5 +1,9 @@
 <template>
-    <div></div>
+    <div class="read-article-wrapper">
+        <keep-alive>
+            <router-view></router-view>
+        </keep-alive>
+    </div>
 </template>
 
 <script lang="ts">

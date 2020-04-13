@@ -70,7 +70,12 @@ export const AsyncRoutes = [
             {
                 path: 'index',
                 name: 'index',
-                component: HomePage
+                component: HomePage,
+                meta: {
+                    requiresAuth: true,
+                    icon: 'el-icon-menu',
+                    index: '1'
+                }
             }
         ]
     },
