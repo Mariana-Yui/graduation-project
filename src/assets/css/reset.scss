@@ -128,21 +128,21 @@ table {
     border-spacing: 0;
 }
 // 隐藏滚动条
-html {
-    overflow: -moz-hidden-unscrollable;
-    height: 100%;
-}
+// html {
+//     overflow: -moz-hidden-unscrollable;
+//     height: 100%;
+// }
 
-body::-webkit-scrollbar {
-    display: none;
-}
+// body::-webkit-scrollbar {
+//     display: none;
+// }
 
-body {
-    -ms-overflow-style: none;
-    height: 100%;
-    width: calc(100vw + 18px);
-    overflow: auto;
-}
+// body {
+//     -ms-overflow-style: none;
+//     height: 100%;
+//     width: calc(100vw + 12px);
+//     overflow: auto;
+// }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

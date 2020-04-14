@@ -1,5 +1,5 @@
 <template>
-    <el-scrollbar :native="false" :noresize="true" class="admin-list-scrollbar">
+    <my-scroller class="admin-list-scrollbar">
         <div class="admin-list-wrapper">
             <el-row class="search-input-suffix" type="flex" align="middle">
                 <el-col :span="1" class="search-text">搜索:</el-col>
@@ -90,7 +90,7 @@
                 <div class="slot-title">新建用户</div>
             </template>
         </common-dialog>
-    </el-scrollbar>
+    </my-scroller>
 </template>
 
 <script lang="ts">
@@ -99,11 +99,13 @@ import * as _ from 'lodash';
 import { Debounce, Bind } from 'lodash-decorators';
 import request from '@/utils/axios';
 import CommonDialog from '@/components/common/dialog.vue';
+import MyScroller from '@/components/common/scrollbar.vue';
 import utils from '@/utils/utils';
 
 @Component({
     components: {
-        CommonDialog
+        CommonDialog,
+        MyScroller
     }
 })
 export default class AdminUser extends Vue {
@@ -211,8 +213,8 @@ export default class AdminUser extends Vue {
 @import '~@/assets/css/default.scss';
 
 .admin-list-scrollbar {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     .admin-list-wrapper {
+        padding: 10px;
         .search-input-suffix {
             margin: 50px 0;
             .search-text {
@@ -230,16 +232,16 @@ export default class AdminUser extends Vue {
             padding-right: 30px;
             margin-top: 30px;
         }
-    }
-    .admin-table {
-        .scope-avatar {
-            margin: 0 auto;
-            background-size: cover;
-            background-position-x: 50%;
-            background-repeat: no-repeat;
-            width: 40px;
-            height: 40px;
-            border-radius: 50% 50%;
+        .admin-table {
+            .scope-avatar {
+                margin: 0 auto;
+                background-size: cover;
+                background-position-x: 50%;
+                background-repeat: no-repeat;
+                width: 40px;
+                height: 40px;
+                border-radius: 50% 50%;
+            }
         }
     }
     .slot-title {
@@ -247,17 +249,6 @@ export default class AdminUser extends Vue {
         font-size: 25px;
         margin-bottom: $margin-bottom;
         text-align: center;
-    }
-    ::v-deep .el-scrollbar__wrap {
-        overflow-x: hidden;
-        overflow-y: scroll;
-    }
-    ::v-deep .el-scrollbar__bar.is-vertical {
-        width: 10px !important;
-        transition: background-color 0.3s;
-        .el-scrollbar__thumb {
-            background-color: $lightgray;
-        }
     }
     ::v-deep .el-dialog__body {
         padding-top: 0 !important;

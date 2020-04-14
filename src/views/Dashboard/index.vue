@@ -24,8 +24,8 @@ export default class Dashboard extends Vue {}
 @import '~@/assets/css/default.scss';
 .content-wrapper {
     flex: 1;
-    margin: 10px 10px 0;
-    padding: 10px 10px;
+    margin: 10px 0 10px 10px;
+    /* padding: 10px 10px; */
     border: 1px solid $lightgray;
     border-radius: 4px;
 }

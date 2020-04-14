@@ -86,6 +86,11 @@
     error-stack-parser "^2.0.0"
     string-width "^2.0.0"
 
+"@tinymce/tinymce-vue@^3.2.0":
+  version "3.2.0"
+  resolved "http://r.cnpmjs.org/@tinymce/tinymce-vue/download/@tinymce/tinymce-vue-3.2.0.tgz#abadab7fd6e143688e756df779fc3b81e586427a"
+  integrity sha1-q62rf9bhQ2iOdW33efw7geWGQno=
+
 "@types/color-name@^1.1.1":
   version "1.1.1"
   resolved "https://registry.npm.taobao.org/@types/color-name/download/@types/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
@@ -114,6 +119,13 @@
     "@types/events" "*"
     "@types/minimatch" "*"
     "@types/node" "*"
+
+"@types/jquery@*":
+  version "3.3.34"
+  resolved "http://r.cnpmjs.org/@types/jquery/download/@types/jquery-3.3.34.tgz#0d3b94057063d3854adaeb579652048fec07ba6c"
+  integrity sha1-DTuUBXBj04VK2utXllIEj+wHumw=
+  dependencies:
+    "@types/sizzle" "*"
 
 "@types/json-schema@^7.0.3":
   version "7.0.4"
@@ -161,6 +173,18 @@
   version "2.5.0"
   resolved "http://r.cnpmjs.org/@types/qiniu-js/download/@types/qiniu-js-2.5.0.tgz#6d4e3948eae48dd65ee8fd39e4570799042aed0a"
   integrity sha1-bU45SOrkjdZe6P055FcHmQQq7Qo=
+
+"@types/sizzle@*":
+  version "2.3.2"
+  resolved "http://r.cnpmjs.org/@types/sizzle/download/@types/sizzle-2.3.2.tgz#a811b8c18e2babab7d542b3365887ae2e4d9de47"
+  integrity sha1-qBG4wY4rq6t9VCszZYh64uTZ3kc=
+
+"@types/tinymce@^4.5.24":
+  version "4.5.24"
+  resolved "http://r.cnpmjs.org/@types/tinymce/download/@types/tinymce-4.5.24.tgz#e225e3fa82f0c2ac2039ef7c3a2b00c80cbde343"
+  integrity sha1-4iXj+oLwwqwgOe98OisAyAy940M=
+  dependencies:
+    "@types/jquery" "*"
 
 "@types/webpack-env@^1.15.1":
   version "1.15.1"
@@ -6859,6 +6883,11 @@ timsort@^0.3.0:
   version "0.3.0"
   resolved "https://registry.npm.taobao.org/timsort/download/timsort-0.3.0.tgz#405411a8e7e6339fe64db9a234de11dc31e02bd4"
   integrity sha1-QFQRqOfmM5/mTbmiNN4R3DHgK9Q=
+
+tinymce@^5.2.1:
+  version "5.2.1"
+  resolved "http://r.cnpmjs.org/tinymce/download/tinymce-5.2.1.tgz#8e6113e8492c2c31b3bec044ddae32bca432ac50"
+  integrity sha1-jmET6EksLDGzvsBE3a4yvKQyrFA=
 
 tmp@^0.0.33:
   version "0.0.33"
