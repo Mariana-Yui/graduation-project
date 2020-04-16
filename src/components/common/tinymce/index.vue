@@ -1,13 +1,13 @@
 <template>
     <div class="editor-wrapper">
         <editor
-            id="tiny-editor"
+            :id="id"
             v-model="content"
             :init="init"
             :disabled="disabled"
             @onInit="handleInit"
         ></editor>
-        <upload-button></upload-button>
+        <upload-button @success-upload="handleSuccessUpload"></upload-button>
     </div>
 </template>
 
@@ -18,6 +18,7 @@ import editor from '@tinymce/tinymce-vue';
 import 'tinymce/themes/silver';
 import './plugin';
 import UploadButton from './uploadButton.vue';
+import config from '@/config/config.default';
 
 @Component({
     components: {
@@ -28,18 +29,15 @@ import UploadButton from './uploadButton.vue';
 export default class TinymceEditor extends Vue {
     @Prop({ default: false }) disabled: boolean;
     @Prop({
-        default:
-            'lists image media table wordcount code fullscreen help codesample toc insertdatetime searchreplace link charmap paste hr'
+        default: config.tinymce_plugins
     })
     plugins: string | string[];
     @Prop({
-        default: () => [
-            'bold italic underline strikethrough blockquote|forecolor backcolor|formatselect |fontsizeselect | alignleft aligncenter alignright alignjustify | outdent indent |codeformat blockformats| removeformat undo redo ',
-            'bullist numlist toc pastetext|codesample charmap  hr insertdatetime |lists image media table link unlink |code searchreplace fullscreen help '
-        ]
+        default: config.tinymce_toolbar
     })
     toolbar: string | string[];
     @Prop({ default: 300 }) height!: number;
+    private id = 'tiny-editor';
     private init = {
         language_url: '/tinymce/langs/zh_CN.js',
         language: 'zh_CN',
@@ -66,7 +64,13 @@ export default class TinymceEditor extends Vue {
     public handleInit() {
         console.log();
     }
-    // public
+    public handleSuccessUpload(res: any[]) {
+        res.forEach((record: any) => {
+            (window as any).tinyMCE.editors[this.id].insertContent(
+                `<img src="${config.upload_domain}/${record.key}" alt="" width="50%" />`
+            );
+        });
+    }
 }
 </script>
 <style lang="scss" scoped>

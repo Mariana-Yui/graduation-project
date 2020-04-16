@@ -62,8 +62,8 @@ import AdminModule from '@/store/modules/admin';
 import UploadModule from '@/store/modules/upload';
 import { UPDATE_ADMIN_INFO, SET_UPLOAD_IMAGE_URL } from '@/store/types';
 import InnerDialog from './innerDialog.vue';
-import UploadDialog from '@/components/common/upload.vue';
-import ImageCropper from '@/components/common/imageCropper.vue';
+import UploadDialog from './upload/index.vue';
+import ImageCropper from './upload/imageCropper.vue';
 
 @Component({
     components: {

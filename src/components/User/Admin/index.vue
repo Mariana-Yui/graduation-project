@@ -13,7 +13,15 @@
                     </el-input>
                 </el-col>
                 <el-col :span="2">
-                    <el-button type="primary" @click="handleNewAdmin">新增</el-button>
+                    <el-button
+                        type="primary"
+                        icon="el-icon-plus
+"
+                        @click="handleNewAdmin"
+                        plain
+                    >
+                        Add
+                    </el-button>
                 </el-col>
             </el-row>
             <el-row class="admin-table">
@@ -32,7 +40,7 @@
                         <el-table-column prop="phone" label="联系方式"></el-table-column>
                         <el-table-column prop="email" label="邮箱"></el-table-column>
                         <el-table-column prop="create_time" label="创建时间"></el-table-column>
-                        <el-table-column prop="enable" label="是否有效">
+                        <el-table-column prop="enable" width="120" label="是否有效">
                             <template slot-scope="scope">
                                 <el-switch
                                     v-model="scope.row.enable"
@@ -43,10 +51,16 @@
                                 </el-switch>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作">
+                        <el-table-column label="操作" width="120" align="center">
                             <template slot-scope="scope">
-                                <el-button type="text" size="small" @click="handleClick(scope)">
-                                    编辑
+                                <el-button
+                                    type="primary"
+                                    size="mini"
+                                    icon="el-icon-edit-outline"
+                                    @click="handleClick(scope)"
+                                    plain
+                                    round
+                                >
                                 </el-button>
                             </template>
                         </el-table-column>

@@ -1,16 +1,34 @@
 <template>
-    <my-scroller class="create-article-scrollbar">
-        <div class="fixed-button-wrapper">
-            <el-button class="fixed-button" type="primary" size="medium" round>草 稿</el-button>
-            <el-button class="fixed-button" type="success" size="medium" round>发 布</el-button>
-        </div>
+    <my-scroller ref="scroller" class="create-article-scrollbar">
+        <transition name="fade" v-if="isHidden">
+            <div class="fixed-button-wrapper">
+                <el-button
+                    class="fixed-button"
+                    type="primary"
+                    size="medium"
+                    @click="handleDemo"
+                    round
+                >
+                    草 稿
+                </el-button>
+                <el-button
+                    class="fixed-button"
+                    type="success"
+                    size="medium"
+                    @click="handlePublish"
+                    round
+                >
+                    发 布
+                </el-button>
+            </div>
+        </transition>
         <div class="create-article-wrapper">
             <div class="button-wrapper"></div>
             <div class="title-wrapper">
                 <span :class="{ 'title': true, 'toggle-blue': toggle }">标题:</span>
                 <el-input
                     placeholder="请输入标题"
-                    v-model="title"
+                    v-model="article.title"
                     @focus="handleFocus"
                     @blur="handleBlur"
                 ></el-input>
@@ -20,7 +38,7 @@
                 <el-col :span="8">
                     <template v-if="isAdmin">
                         <el-select
-                            v-model="author"
+                            v-model="article.author"
                             placeholder="请选择"
                             v-if="candidates && candidates.length"
                         >
@@ -34,14 +52,18 @@
                         </el-select>
                     </template>
                     <template v-else>
-                        <el-input placeholder="请输入内容" v-model="author" :disabled="true">
+                        <el-input
+                            placeholder="请输入内容"
+                            v-model="article.author"
+                            :disabled="true"
+                        >
                         </el-input>
                     </template>
                 </el-col>
                 <el-col :span="2" class="publish-time">发布时间:</el-col>
                 <el-col :span="8">
                     <el-date-picker
-                        v-model="publishDate"
+                        v-model="article.publishDate"
                         align="right"
                         type="date"
                         placeholder="选择日期"
@@ -50,7 +72,10 @@
                     </el-date-picker>
                 </el-col>
             </el-row>
-            <tinymce-editor :height="600"></tinymce-editor>
+            <!-- 摘要 -->
+            <slot name="abstract"></slot>
+            <tinymce-editor :height="editorHeight" ref="tinymce"></tinymce-editor>
+            <cover-cropper @success-upload="handleUploadCoverSuccess"></cover-cropper>
         </div>
     </my-scroller>
 </template>
@@ -58,24 +83,33 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
+import * as _ from 'lodash';
 import AdminModule from '@/store/modules/admin';
 import request from '../../utils/axios';
 import TinymceEditor from '@/components/common/tinymce/index.vue';
 import MyScroller from '@/components/common/scrollbar.vue';
+import CoverCropper from '@/components/Article/common/coverCropper.vue';
 
 @Component({
     components: {
         TinymceEditor,
-        MyScroller
+        MyScroller,
+        CoverCropper
     }
 })
 export default class ArticleCommon extends Vue {
     private admin!: AdminModule;
-    private author = '';
+    private article = {
+        title: '',
+        author: '',
+        publishDate: '',
+        cover: ''
+    };
     private candidates: string[] = [];
-    private title = '';
     private toggle = false;
-    private publishDate = '';
+    private editorHeight = 700;
+    private isHidden = true;
+    private scheduleTime = 50;
     private pickerOptions = {
         disabledDate(time: Date) {
             return time.getTime() < Date.now() - 3600 * 24 * 1000;
@@ -117,10 +151,28 @@ export default class ArticleCommon extends Vue {
             const data = await request.getAllUsername();
             if (data.code === 0) {
                 this.candidates = data.info.user;
-                this.author = this.candidates[0];
+                this.article.author = this.candidates[0];
             }
         } else {
-            this.author = this.admin.userInfo.username;
+            this.article.author = this.admin.userInfo.username;
+        }
+        this.$nextTick(() => {
+            const self = this;
+            ((this as any).$refs['scroller'].$el as HTMLElement)
+                .getElementsByClassName('el-scrollbar__wrap')[0]
+                .addEventListener(
+                    'scroll',
+                    _.throttle(self.checkToHide.bind(self), this.scheduleTime)
+                );
+        });
+    }
+    private checkToHide() {
+        const bottom = ((this as any).$refs['tinymce'].$el as HTMLElement).getClientRects()[0]
+            .bottom;
+        if (bottom >= 165 + this.editorHeight) {
+            this.isHidden = true;
+        } else {
+            this.isHidden = false;
         }
     }
     public handleFocus() {
@@ -129,21 +181,39 @@ export default class ArticleCommon extends Vue {
     public handleBlur() {
         this.toggle = false;
     }
+    public handleUploadCoverSuccess(cover: string) {
+        this.article.cover = cover;
+    }
+    public handleDemo() {
+        this.$emit('save-as-demo', this.article);
+    }
+    public handlePublish() {
+        this.$emit('publish', this.article);
+    }
 }
 </script>
 <style lang="scss" scoped>
 @import '~@/assets/css/default.scss';
 
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s;
+}
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
+}
+
 .create-article-scrollbar {
     position: relative;
     .create-article-wrapper {
-        margin: 150px auto 0;
+        margin: 150px auto 50px;
         width: 90%;
         box-sizing: border-box;
         color: $gray;
         font-weight: bold;
         .title-wrapper {
-            width: 70%;
+            width: 80%;
             .title {
                 display: block;
                 padding: 10px;
@@ -157,7 +227,7 @@ export default class ArticleCommon extends Vue {
             }
         }
         .author-publishtime-wrapper {
-            margin: 30px 0 40px;
+            margin: 40px 0 40px;
             padding-left: 10px;
         }
         .toggle-blue {
@@ -168,7 +238,7 @@ export default class ArticleCommon extends Vue {
         position: absolute;
         z-index: 999;
         top: calc(150px / 2 - 36px / 2);
-        right: 20px;
+        right: 80px;
         .fixed-button {
             margin-right: 10px;
         }

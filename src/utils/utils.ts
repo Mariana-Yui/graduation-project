@@ -7,10 +7,14 @@ class Utils {
         const url = window.URL.createObjectURL(blob);
         return url;
     }
-    public fileToBlob(file: File): string {
+    public fileToBlob(file: File, needUrl = true): string | Blob {
         const blob = new Blob([file]);
-        const url = window.URL.createObjectURL(blob);
-        return url;
+        if (needUrl) {
+            const url = window.URL.createObjectURL(blob);
+            return url;
+        } else {
+            return blob;
+        }
     }
     private _setItem(key: string, val: any): void {
         // 简单判断是否是原始类型
@@ -46,12 +50,12 @@ class Utils {
             window.localStorage.removeItem(k);
         });
     }
-    public getRandomImgName() {
+    public getRandomImgName(suffix = 'jpg') {
         const date = moment().format('YYYY/MM/DD/');
         const random = Math.random()
             .toString(16)
             .slice(2);
-        return date + random + '80*80.jpg';
+        return date + random + `80*80.${suffix}`;
     }
     public debounce(fn: Function, delay = 300) {
         let timer: number;
