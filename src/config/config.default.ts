@@ -3,7 +3,7 @@ export default {
     baseURL: 'http://localhost:7001',
     time: 10 * 1000,
     secret_key: 'diygod',
-    upload_domain: 'http://q7lp77n6c.bkt.clouddn.com',
+    upload_domain: 'http://q95bvp3v9.bkt.clouddn.com',
     cropper_options: () => ({
         outputSize: 1, // 裁剪生成图片的质量
         outputType: 'jpeg', // 裁剪生成图片的格式

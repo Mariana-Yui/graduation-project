@@ -6,7 +6,7 @@
                     class="fixed-button"
                     type="primary"
                     size="medium"
-                    @click="handleDemo"
+                    @click="saveAsDemo"
                     round
                 >
                     草 稿
@@ -15,7 +15,7 @@
                     class="fixed-button"
                     type="success"
                     size="medium"
-                    @click="handlePublish"
+                    @click="publishArticle"
                     round
                 >
                     发 布
@@ -60,7 +60,7 @@
                         </el-input>
                     </template>
                 </el-col>
-                <el-col :span="2" class="publish-time">发布时间:</el-col>
+                <el-col :span="2" class="publish-time">预发布时间:</el-col>
                 <el-col :span="8">
                     <el-date-picker
                         v-model="article.publishDate"
@@ -74,14 +74,16 @@
             </el-row>
             <!-- 摘要 -->
             <slot name="abstract"></slot>
+            <slot name="film"></slot>
             <tinymce-editor :height="editorHeight" ref="tinymce"></tinymce-editor>
+            <slot name="music"></slot>
             <cover-cropper @success-upload="handleUploadCoverSuccess"></cover-cropper>
         </div>
     </my-scroller>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Prop } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import * as _ from 'lodash';
 import AdminModule from '@/store/modules/admin';
@@ -98,18 +100,32 @@ import CoverCropper from '@/components/Article/common/coverCropper.vue';
     }
 })
 export default class ArticleCommon extends Vue {
+    @Prop() type!: string;
+    /* read specfic slot */
+    @Prop({ default: '' }) abstract: string;
+    @Prop({ default: () => ({ name: '', quote: '' }) }) film_info: { name: string; quote: string };
+    @Prop({ default: () => ({ name: '', url: '', singer: '', cover: '', album: '' }) })
+    music_info: { name: string; url: string; singer: string; cover: string; album: string };
+    @Prop({ default: '' }) broadcast: string;
     private admin!: AdminModule;
     private article = {
         title: '',
         author: '',
         publishDate: '',
-        cover: ''
+        cover: '',
+        abstract: '',
+        broadcast: '',
+        film_info: {},
+        music_info: {}
     };
     private candidates: string[] = [];
     private toggle = false;
     private editorHeight = 700;
     private isHidden = true;
-    private scheduleTime = 50;
+    private scheduleTime = 100;
+    private max = Date.now();
+    private delay = 5000;
+
     private pickerOptions = {
         disabledDate(time: Date) {
             return time.getTime() < Date.now() - 3600 * 24 * 1000;
@@ -164,6 +180,11 @@ export default class ArticleCommon extends Vue {
                     'scroll',
                     _.throttle(self.checkToHide.bind(self), this.scheduleTime)
                 );
+            this.$notify.info({
+                title: '提示',
+                message: '记得定期保存草稿哦',
+                duration: 2000
+            });
         });
     }
     private checkToHide() {
@@ -184,11 +205,35 @@ export default class ArticleCommon extends Vue {
     public handleUploadCoverSuccess(cover: string) {
         this.article.cover = cover;
     }
-    public handleDemo() {
-        this.$emit('save-as-demo', this.article);
+    /**节流**/
+    private async throttle(resolve: Function) {
+        if (Date.now() - this.max > this.delay) {
+            await resolve.apply(this);
+        } else {
+            this.$message(
+                this.$rules.message(`操作过于频繁,请${this.delay / 1000}秒后重试`, 'error')
+            );
+        }
     }
-    public handlePublish() {
-        this.$emit('publish', this.article);
+    public async saveAsDemo() {
+        this.throttle(async function() {
+            const { code, message } = await request.saveArticle(this.article, this.type, true);
+            if (code === 0) {
+                this.$message(this.$rules.message(message));
+            } else {
+                this.$message(this.$rules.message(message, 'error'));
+            }
+        });
+    }
+    public publishArticle() {
+        this.throttle(async function() {
+            const { code, message } = await request.saveArticle(this.article, this.type, false);
+            if (code === 0) {
+                this.$message(this.$rules.message(message));
+            } else {
+                this.$message(this.$rules.message(message, 'error'));
+            }
+        });
     }
 }
 </script>

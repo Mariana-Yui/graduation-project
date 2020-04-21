@@ -172,6 +172,14 @@ class Request {
         const { data } = await this.instance.get('/article/publish/getallusername');
         return data;
     }
+    public async saveArticle(article: any, type: string, isDemo: boolean) {
+        const { data } = await this.instance.post('/article/publish/savearticle', {
+            article,
+            type,
+            isDemo
+        });
+        return data;
+    }
 }
 
 const request = new Request();

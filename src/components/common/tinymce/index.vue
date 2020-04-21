@@ -66,7 +66,7 @@ export default class TinymceEditor extends Vue {
     }
     public handleSuccessUpload(res: any[]) {
         res.forEach((record: any) => {
-            (window as any).tinyMCE.editors[this.id].insertContent(
+            window.tinyMCE.editors[this.id].insertContent(
                 `<img src="${config.upload_domain}/${record.key}" alt="" width="50%" />`
             );
         });

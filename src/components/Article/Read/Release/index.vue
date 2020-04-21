@@ -1,5 +1,17 @@
 <template>
-    <common-article @save-as-demo="handleSaveAsDemo" @publish="handlePublish"></common-article>
+    <common-article :type="type">
+        <template v-slot:abstract>
+            <div class="abstract-wrapper">
+                <h3>摘要:</h3>
+                <el-input
+                    type="textarea"
+                    :rows="rows"
+                    v-model="abstract"
+                    class="abstract-textarea"
+                ></el-input>
+            </div>
+        </template>
+    </common-article>
 </template>
 
 <script lang="ts">
@@ -12,8 +24,18 @@ import CommonArticle from '@/components/Article/commonArticle.vue';
     }
 })
 export default class CreateRead extends Vue {
-    public handleSaveAsDemo() {}
-    public handlePublish() {}
+    private type = 'read';
+    private abstract = '';
+    private rows = 1;
 }
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.abstract-wrapper {
+    display: flex;
+    align-items: center;
+    padding: 0 0 40px 10px;
+    h3 {
+        width: 4.167%;
+    }
+}
+</style>

@@ -89,6 +89,7 @@ export default class CoverCropper extends Vue {
     private cropping = false;
     private fileList: any[] = [];
     private imgUrl = '';
+    private threshold = 2 * 1024 * 1024;
 
     get uploadText() {
         return this.cropping ? '重新上传' : '点击上传';
@@ -97,15 +98,30 @@ export default class CoverCropper extends Vue {
     public created() {
         this.qiniu = getModule(QiniuModule, this.$store);
     }
+    private checkFileSize(file: any) {
+        if (file.size > this.threshold) {
+            this.$message(
+                this.$rules.message(
+                    `封面图片大小不得超过${this.threshold / 1024 / 1024}MB`,
+                    'error'
+                )
+            );
+            return false;
+        }
+        return true;
+    }
     public handleChange(file: any, fileList: any[]) {
         // 清除旧图片资源
         if (this.imgUrl !== '') {
             window.URL.revokeObjectURL(this.imgUrl);
         }
-        this.fileList = fileList;
-        const blob = utils.fileToBlob(file.raw) as string;
-        this.imgUrl = blob;
-        this.cropping = true;
+        // 检测图片大小
+        if (this.checkFileSize(file)) {
+            this.fileList = fileList;
+            const blob = utils.fileToBlob(file.raw) as string;
+            this.imgUrl = blob;
+            this.cropping = true;
+        }
     }
     public handlePreview() {
         (this as any).$refs['cropper'].getCropData((base64: string) => {
