@@ -15,9 +15,11 @@ class Request {
     private instance: AxiosInstance;
     constructor() {
         const instance: AxiosInstance = axios.create({
-            baseURL: config.baseURL
+            baseURL: config.baseURL,
+            withCredentials: true
         });
         instance.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
+        // instance.defaults.headers.common['Origin'] = config.origin;
         instance.interceptors.request.use(
             (config: AxiosRequestConfig) => {
                 const token = utils.getItem('token');
@@ -33,6 +35,7 @@ class Request {
         instance.interceptors.response.use(
             (res: AxiosResponse) => res,
             (error: AxiosError) => {
+                console.log(error, error.response);
                 if (error.response && error.response.status) {
                     switch (error.response.status) {
                         case 401: {
@@ -177,6 +180,27 @@ class Request {
             article,
             type,
             isDemo
+        });
+        return data;
+    }
+    // 音乐模块
+    public async searchMusicByKeywords(keywords: string) {
+        const { data } = await this.instance.get('/article/music/searchMusicBykeywords', {
+            params: {
+                keywords
+            }
+        });
+        return data;
+    }
+    public async getMusicByDefaultKeywords() {
+        const { data } = await this.instance.get('/article/music/getMusicByDefaultkeywords');
+        return data;
+    }
+    public async getSpecificSongUrls(id: number) {
+        const { data } = await this.instance.get('/article/music/getSpecificSongurls', {
+            params: {
+                id
+            }
         });
         return data;
     }

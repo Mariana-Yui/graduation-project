@@ -100,7 +100,7 @@ export default class UploadButton extends Vue {
             }
             const blobs = this.fileList.map((file: any) => {
                 const blob = utils.fileToBlob(file.raw, false) as Blob;
-                const key = utils.getRandomImgName(file.name.slice(-3));
+                const key = utils.getRandomUploadName(file.name.slice(-3));
                 return uploadFile(blob, key, utils.getItem('uptoken'));
             });
             Promise.all(blobs).then((res: any[]) => {

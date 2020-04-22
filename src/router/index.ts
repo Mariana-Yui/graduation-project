@@ -87,6 +87,7 @@ export const AsyncRoutes = [
         meta: {
             requiresAuth: true,
             icon: 'el-icon-s-custom',
+            role: ['admin'],
             index: '2'
         },
         children: [

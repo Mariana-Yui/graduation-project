@@ -50,7 +50,7 @@ class Utils {
             window.localStorage.removeItem(k);
         });
     }
-    public getRandomImgName(suffix = 'jpg') {
+    public getRandomUploadName(suffix = 'jpg') {
         const date = moment().format('YYYY/MM/DD/');
         const random = Math.random()
             .toString(16)

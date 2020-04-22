@@ -137,7 +137,7 @@ export default class CoverCropper extends Vue {
                 if (!utils.getItem('uptoken')) {
                     await this.qiniu[SET_UPTOKEN]();
                 }
-                const imgName = utils.getRandomImgName();
+                const imgName = utils.getRandomUploadName();
                 const res = await request.uploadFile(blob, imgName, utils.getItem('uptoken'));
                 const cover_url = `${config.upload_domain}/${imgName}`;
                 this.$emit('success-upload', cover_url);

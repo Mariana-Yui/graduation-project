@@ -39,7 +39,8 @@ export default class Permission extends VuexModule {
                 this.role = localUserInfo.role;
                 resolve(this.role);
             } else {
-                reject(new Error('no userInfo'));
+                // reject(new Error('no userInfo'));
+                reject();
             }
         });
     }

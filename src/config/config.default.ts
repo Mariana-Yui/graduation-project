@@ -1,9 +1,11 @@
 export default {
     nickName: 'DIYGod',
     baseURL: 'http://localhost:7001',
+    origin: '127.0.0.1:8080',
     time: 10 * 1000,
     secret_key: 'diygod',
     upload_domain: 'http://q95bvp3v9.bkt.clouddn.com',
+    default_cover: 'https://p1.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg',
     cropper_options: () => ({
         outputSize: 1, // 裁剪生成图片的质量
         outputType: 'jpeg', // 裁剪生成图片的格式

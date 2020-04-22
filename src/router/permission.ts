@@ -19,7 +19,7 @@ async function addDynamicRoutes() {
         router.$addRoutes(permission.dynamicRoutes);
     } catch (error) {
         // 本地没有userInfo, 重新登录
-        console.log(error);
+        // console.log(error);
         admin[ADMIN_LOGOUT]();
         router.push({ path: '/login' });
     }

@@ -53,6 +53,7 @@
                     </template>
                     <template v-else>
                         <el-input
+                            class="default-author"
                             placeholder="请输入内容"
                             v-model="article.author"
                             :disabled="true"
@@ -77,6 +78,7 @@
             <slot name="film"></slot>
             <tinymce-editor :height="editorHeight" ref="tinymce"></tinymce-editor>
             <slot name="music"></slot>
+            <slot name="broadcast"></slot>
             <cover-cropper @success-upload="handleUploadCoverSuccess"></cover-cropper>
         </div>
     </my-scroller>
@@ -104,8 +106,8 @@ export default class ArticleCommon extends Vue {
     /* read specfic slot */
     @Prop({ default: '' }) abstract: string;
     @Prop({ default: () => ({ name: '', quote: '' }) }) film_info: { name: string; quote: string };
-    @Prop({ default: () => ({ name: '', url: '', singer: '', cover: '', album: '' }) })
-    music_info: { name: string; url: string; singer: string; cover: string; album: string };
+    @Prop({ default: () => ({ name: '', url: '', artists: '', cover: '', album: '' }) })
+    music_info: { name: string; url: string; artists: string; cover: string; album: string };
     @Prop({ default: '' }) broadcast: string;
     private admin!: AdminModule;
     private article = {
@@ -274,6 +276,9 @@ export default class ArticleCommon extends Vue {
         .author-publishtime-wrapper {
             margin: 40px 0 40px;
             padding-left: 10px;
+            .default-author {
+                width: 220px;
+            }
         }
         .toggle-blue {
             color: $blue !important;

@@ -51,7 +51,7 @@ export default class DashboardHeader extends Vue {
         };
     }
     get iconClass() {
-        return this.menu.isCollapse ? 'el-icon-s-unfold icon-common' : 'el-icon-s-fold icon-common';
+        return this.menu.isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold';
     }
     public created() {
         this.admin = getModule(AdminModule, this.$store);
@@ -100,7 +100,8 @@ export default class DashboardHeader extends Vue {
             }
         }
     }
-    .icon-common {
+    ::v-deep .el-icon-s-unfold,
+    .el-icon-s-fold {
         font-size: 30px;
         margin-left: 15px;
         padding: 15px 15px;

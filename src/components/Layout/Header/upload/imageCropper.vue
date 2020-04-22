@@ -113,7 +113,7 @@ export default class ImageCropper extends Vue {
             }
             (this as any).$refs['cropper'].getCropBlob(async (blob: Blob) => {
                 try {
-                    const imgName = utils.getRandomImgName();
+                    const imgName = utils.getRandomUploadName();
                     const res = await request.uploadFile(blob, imgName, utils.getItem('uptoken'));
                     const avatar_url = `${config.upload_domain}/${imgName}`;
                     this.admin[UPDATE_ADMIN_INFO]({

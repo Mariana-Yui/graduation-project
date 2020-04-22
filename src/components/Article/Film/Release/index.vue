@@ -1,16 +1,16 @@
 <template>
-    <common-article :type="type">
+    <common-article :type="type" @film_info="film_info">
         <template v-slot:film>
             <div class="film-wrapper">
                 <div class="film-name">
                     <h3>电影名称:</h3>
-                    <el-input class="film-name-input" v-model="film.name"></el-input>
+                    <el-input class="film-name-input" v-model="film_info.name"></el-input>
                 </div>
                 <div class="film-quote">
                     <h3>电影经典台词:</h3>
                     <el-input
                         class="film-quote-input"
-                        v-model="film.quote"
+                        v-model="film_info.quote"
                         type="textarea"
                         :rows="rows"
                     ></el-input>
@@ -31,7 +31,7 @@ import CommonArticle from '@/components/Article/commonArticle.vue';
 })
 export default class CreateFilm extends Vue {
     private type = 'film';
-    private film = { name: '', quote: '' };
+    private film_info = { name: '', quote: '' };
     private rows = 2;
 }
 </script>
