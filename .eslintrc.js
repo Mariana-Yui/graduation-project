@@ -18,7 +18,7 @@ module.exports = {
         'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
         'no-var': 'error',
         '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
-        indent: ['error', 4],
+        indent: ['error', 4, { 'SwitchCase': 1 }],
         'linebreak-style': ['error', 'unix'],
         quotes: ['error', 'single'],
         semi: ['error', 'always'],
@@ -30,6 +30,7 @@ module.exports = {
         '@typescript-eslint/camelcase': 0,
         '@typescript-eslint/no-this-alias': 0,
         '@typescript-eslint/no-empty-function': 0,
-        '@typescript-eslint/no-empty-interface': 0
+        '@typescript-eslint/no-empty-interface': 0,
+        'no-empty': 0
     }
 };

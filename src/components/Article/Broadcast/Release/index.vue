@@ -12,8 +12,8 @@
                         :on-change="handleChangeFile"
                         :file-list="fileList"
                         accept="audio/*"
-                        v-if="beforeUpload"
-                        :disabled="uploading"
+                        v-show="beforeUpload"
+                        :show-file-list="false"
                     >
                         <i class="el-icon-upload"></i>
                         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -21,7 +21,7 @@
                             只能上传audio/音频文件，且不超过30MB
                         </div>
                     </el-upload>
-                    <div class="broadcast-player" v-else></div>
+                    <div class="broadcast-player" v-show="!beforeUpload"></div>
                 </div>
             </div>
         </template>
@@ -40,7 +40,11 @@ import request from '@/utils/axios';
 import config from '@/config/config.default';
 import { SET_UPTOKEN } from '@/store/types';
 
-@Component
+@Component({
+    components: {
+        CommonArticle
+    }
+})
 export default class CreateBroadcast extends Vue {
     private type = 'broadcast';
     private broadcast = '';
@@ -63,6 +67,7 @@ export default class CreateBroadcast extends Vue {
     }
     public async handleChangeFile(file: any, fileList: any) {
         if (this.checkFileSize(file)) {
+            this.$message.info('文件正在上传, 请稍等...');
             this.uploading = true;
             this.fileList = fileList;
             try {
@@ -72,7 +77,7 @@ export default class CreateBroadcast extends Vue {
                 const suffix = file.name.slice(-3);
                 const fileRandomName = utils.getRandomUploadName(suffix);
                 // 赋值随机生成url
-                this.broadcast = fileRandomName;
+                this.broadcast = `${config.upload_domain}/${fileRandomName}`;
                 const blob = utils.fileToBlob(file.raw, false) as Blob;
                 const hash = await request.uploadFile(
                     blob,
@@ -85,14 +90,15 @@ export default class CreateBroadcast extends Vue {
                 this.generatePlayer();
             } catch (error) {
                 console.log(error);
-                this.$message.error('上传失败，请刷新重试...');
+                utils.removeItem('uptoken');
+                this.handleChangeFile(file, fileList);
             }
             this.uploading = false;
         }
     }
     private generatePlayer() {
         this.MePlayer({
-            target: 'broadcast-player',
+            target: '.broadcast-player',
             music: {
                 src: this.broadcast
             }
@@ -100,4 +106,16 @@ export default class CreateBroadcast extends Vue {
     }
 }
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.broadcast-upload-wrapper {
+    .broadcast-title {
+        padding: 40px 0;
+    }
+    .broadcast-upload-area {
+        font-weight: normal;
+        .broadcast-player {
+            width: 40%;
+        }
+    }
+}
+</style>

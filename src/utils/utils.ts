@@ -55,7 +55,7 @@ class Utils {
         const random = Math.random()
             .toString(16)
             .slice(2);
-        return date + random + `80*80.${suffix}`;
+        return date + random + `.${suffix}`;
     }
     public debounce(fn: Function, delay = 300) {
         let timer: number;

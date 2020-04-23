@@ -69,6 +69,7 @@
                         type="date"
                         placeholder="选择日期"
                         :picker-options="pickerOptions"
+                        @change="handleChangeDate"
                     >
                     </el-date-picker>
                 </el-col>
@@ -88,6 +89,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import * as _ from 'lodash';
+import { filterXSS } from 'xss';
 import AdminModule from '@/store/modules/admin';
 import request from '../../utils/axios';
 import TinymceEditor from '@/components/common/tinymce/index.vue';
@@ -130,7 +132,10 @@ export default class ArticleCommon extends Vue {
 
     private pickerOptions = {
         disabledDate(time: Date) {
-            return time.getTime() < Date.now() - 3600 * 24 * 1000;
+            return (
+                time.getTime() < Date.now() - 3600 * 24 * 1000 ||
+                time.getTime() > Date.now() + 3600 * 24 * 7 * 1000
+            );
         },
         shortcuts: [
             {
@@ -161,6 +166,12 @@ export default class ArticleCommon extends Vue {
     get isAdmin() {
         return this.admin.userInfo.role === 'admin' ? true : false;
     }
+    get content() {
+        if (this.$refs['tinymce'] != null) {
+            return (this as any).$refs['tinymce'].content;
+        }
+        return '';
+    }
     public created() {
         this.admin = getModule(AdminModule, this.$store);
     }
@@ -188,6 +199,9 @@ export default class ArticleCommon extends Vue {
                 duration: 2000
             });
         });
+    }
+    private handleChangeDate() {
+        this.$message.info('实际发布时间可能受审核影响, 对此产生的不便深感抱歉...');
     }
     private checkToHide() {
         const bottom = ((this as any).$refs['tinymce'].$el as HTMLElement).getClientRects()[0]
@@ -237,6 +251,61 @@ export default class ArticleCommon extends Vue {
             }
         });
     }
+    private validateOptions(status: number) {
+        const { title, publishDate, cover } = this.article;
+        if (status === 0) {
+            // 草稿
+            if (title === '') {
+                this.$message.error('请至少填写标题!');
+                return false;
+            }
+        } else {
+            // 发布
+            if (title === '' || publishDate === '' || cover === '' || this.content === '') {
+                this.$message.error('有未填写内容');
+                return false;
+            }
+        }
+        return true;
+    }
+    private switchByType() {
+        switch (this.type) {
+            case 'read': {
+                if (this.abstract === '') {
+                    this.$message.error('请填写摘要');
+                    return false;
+                }
+                this.article.abstract = this.abstract;
+                break;
+            }
+            case 'film': {
+                if (!this.film_info.name || !this.film_info.quote) {
+                    this.$message.error('请填写电影信息');
+                    return false;
+                }
+                this.article.film_info = this.film_info;
+                break;
+            }
+            case 'music': {
+                if (!this.music_info.url || !this.music_info.cover) {
+                    this.$message.error('请选择音乐');
+                    return false;
+                }
+                this.article.music_info = this.music_info;
+                break;
+            }
+            case 'broadcast': {
+                if (this.broadcast === '') {
+                    this.$message.error('请上传自定义音频');
+                    return false;
+                }
+                this.article.broadcast = this.broadcast;
+                break;
+            }
+        }
+        return true;
+    }
+    private formatAritleExceptXSS() {}
 }
 </script>
 <style lang="scss" scoped>
