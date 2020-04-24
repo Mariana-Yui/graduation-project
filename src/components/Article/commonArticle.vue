@@ -86,7 +86,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import * as _ from 'lodash';
 import { filterXSS } from 'xss';
@@ -95,6 +95,7 @@ import request from '../../utils/axios';
 import TinymceEditor from '@/components/common/tinymce/index.vue';
 import MyScroller from '@/components/common/scrollbar.vue';
 import CoverCropper from '@/components/Article/common/coverCropper.vue';
+import utils from '@/utils/utils';
 
 @Component({
     components: {
@@ -116,6 +117,7 @@ export default class ArticleCommon extends Vue {
         title: '',
         author: '',
         publishDate: '',
+        content: '',
         cover: '',
         abstract: '',
         broadcast: '',
@@ -127,8 +129,8 @@ export default class ArticleCommon extends Vue {
     private editorHeight = 700;
     private isHidden = true;
     private scheduleTime = 100;
-    private max = Date.now();
     private delay = 5000;
+    private max = Date.now() - this.delay;
 
     private pickerOptions = {
         disabledDate(time: Date) {
@@ -171,6 +173,22 @@ export default class ArticleCommon extends Vue {
             return (this as any).$refs['tinymce'].content;
         }
         return '';
+    }
+    @Watch('abstract')
+    onAbstractChanged(val: string) {
+        this.article.abstract = val;
+    }
+    @Watch('film_info', { deep: true, immediate: true })
+    onFilmInfoChanged(val: any) {
+        this.article.film_info = val;
+    }
+    @Watch('music_info', { deep: true, immediate: true })
+    onMusicInfoChanged(val: any) {
+        this.article.music_info = val;
+    }
+    @Watch('broadcast', { deep: true, immediate: true })
+    onBroadcastChanged(val: any) {
+        this.article.broadcast = val;
     }
     public created() {
         this.admin = getModule(AdminModule, this.$store);
@@ -224,6 +242,7 @@ export default class ArticleCommon extends Vue {
     /**节流**/
     private async throttle(resolve: Function) {
         if (Date.now() - this.max > this.delay) {
+            this.max = Date.now();
             await resolve.apply(this);
         } else {
             this.$message(
@@ -233,21 +252,29 @@ export default class ArticleCommon extends Vue {
     }
     public async saveAsDemo() {
         this.throttle(async function() {
-            const { code, message } = await request.saveArticle(this.article, this.type, true);
-            if (code === 0) {
-                this.$message(this.$rules.message(message));
-            } else {
-                this.$message(this.$rules.message(message, 'error'));
+            if (this.validateOptions(0)) {
+                this.article.content = this.content;
+                this.formatAritleExceptXSS(this.article);
+                const { code, message } = await request.saveArticle(this.article, this.type, true);
+                if (code === 0) {
+                    this.$message(this.$rules.message(message));
+                } else {
+                    this.$message(this.$rules.message(message, 'error'));
+                }
             }
         });
     }
     public publishArticle() {
         this.throttle(async function() {
-            const { code, message } = await request.saveArticle(this.article, this.type, false);
-            if (code === 0) {
-                this.$message(this.$rules.message(message));
-            } else {
-                this.$message(this.$rules.message(message, 'error'));
+            if (this.validateOptions(1) && this.switchByType()) {
+                this.formatArticleExceptXSS(this.article);
+                console.log(this.article);
+                // const { code, message } = await request.saveArticle(this.article, this.type, false);
+                // if (code === 0) {
+                //     this.$message(this.$rules.message(message));
+                // } else {
+                //     this.$message(this.$rules.message(message, 'error'));
+                // }
             }
         });
     }
@@ -275,7 +302,6 @@ export default class ArticleCommon extends Vue {
                     this.$message.error('请填写摘要');
                     return false;
                 }
-                this.article.abstract = this.abstract;
                 break;
             }
             case 'film': {
@@ -283,7 +309,6 @@ export default class ArticleCommon extends Vue {
                     this.$message.error('请填写电影信息');
                     return false;
                 }
-                this.article.film_info = this.film_info;
                 break;
             }
             case 'music': {
@@ -291,7 +316,6 @@ export default class ArticleCommon extends Vue {
                     this.$message.error('请选择音乐');
                     return false;
                 }
-                this.article.music_info = this.music_info;
                 break;
             }
             case 'broadcast': {
@@ -299,13 +323,22 @@ export default class ArticleCommon extends Vue {
                     this.$message.error('请上传自定义音频');
                     return false;
                 }
-                this.article.broadcast = this.broadcast;
                 break;
             }
         }
         return true;
     }
-    private formatAritleExceptXSS() {}
+    private formatAritleExceptXSS(obj: any | string) {
+        if (utils.isPlainObject(obj)) {
+            for (const key in obj) {
+                if (typeof obj[key] === 'string') {
+                    obj[key] = filterXSS(obj[key]);
+                } else {
+                    this.formatAritleExceptXSS(obj[key]);
+                }
+            }
+        }
+    }
 }
 </script>
 <style lang="scss" scoped>

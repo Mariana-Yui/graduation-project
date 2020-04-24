@@ -67,6 +67,9 @@ class Utils {
             }, delay);
         };
     }
+    public isPlainObject(obj: any) {
+        return Object.prototype.toString.call(obj) === '[object Object]';
+    }
 }
 
 const utils = new Utils();

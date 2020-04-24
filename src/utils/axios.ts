@@ -39,13 +39,13 @@ class Request {
                 if (error.response && error.response.status) {
                     switch (error.response.status) {
                         case 401: {
-                            const url = error.response.config.url;
-                            if (!/\/login/.test(url)) {
-                                router.replace({
-                                    path: '/login',
-                                    query: { redirect: '/dashboard' }
-                                });
-                            }
+                            // const url = error.response.config.url;
+                            // if (!/\/login/.test(url)) {
+                            router.replace({
+                                path: '/login',
+                                query: { redirect: '/dashboard' }
+                            });
+                            // }
                             // utils.removeItem('token', '_id', 'userInfo');
                             admin[ADMIN_LOGOUT]();
                             break;

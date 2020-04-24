@@ -1,5 +1,5 @@
 <template>
-    <common-article :type="type">
+    <common-article :type="type" :abstract="abstract">
         <template v-slot:abstract>
             <div class="abstract-wrapper">
                 <h3>摘要:</h3>
