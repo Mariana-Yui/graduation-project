@@ -41,6 +41,7 @@
                 :auto-upload="false"
                 :file-list="fileList"
                 :show-file-list="false"
+                accept=".jpg, .png"
             >
                 <el-button size="small" type="primary" icon="el-icon-upload2">
                     {{ uploadText }}

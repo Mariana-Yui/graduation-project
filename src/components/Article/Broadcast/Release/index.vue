@@ -1,5 +1,5 @@
 <template>
-    <common-article :type="type" @broadcast="broadcast">
+    <common-article :type="type" :broadcast="broadcast">
         <template v-slot:broadcast>
             <div class="broadcast-upload-wrapper">
                 <div class="broadcast-title">电台板块设置:</div>

@@ -41,10 +41,12 @@ class Request {
                         case 401: {
                             // const url = error.response.config.url;
                             // if (!/\/login/.test(url)) {
-                            router.replace({
-                                path: '/login',
-                                query: { redirect: '/dashboard' }
-                            });
+                            // router.replace({
+                            //     path: '/login',
+                            //     query: { redirect: '/dashboard' }
+                            // });
+                            debugger;
+                            window.location.href = 'http://localhost:8080/login?redirect=dashboard';
                             // }
                             // utils.removeItem('token', '_id', 'userInfo');
                             admin[ADMIN_LOGOUT]();
@@ -175,11 +177,12 @@ class Request {
         const { data } = await this.instance.get('/article/publish/getallusername');
         return data;
     }
-    public async saveArticle(article: any, type: string, isDemo: boolean) {
+    public async saveArticle(article: any, type: string, isDemo: boolean, _id: string) {
         const { data } = await this.instance.post('/article/publish/savearticle', {
             article,
             type,
-            isDemo
+            isDemo,
+            _id
         });
         return data;
     }
@@ -200,6 +203,16 @@ class Request {
         const { data } = await this.instance.get('/article/music/getSpecificSongurls', {
             params: {
                 id
+            }
+        });
+        return data;
+    }
+    /*******************************文章列表**************************************/
+    public async getAllTypedArticle(_id: string, type: string) {
+        const { data } = await this.instance.get('/article/list/getAllTypedArticle', {
+            params: {
+                _id,
+                type
             }
         });
         return data;

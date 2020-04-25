@@ -5,7 +5,7 @@
                 <el-col :span="1" class="search-text">搜索:</el-col>
                 <el-col :span="4" class="search-input">
                     <el-input
-                        placeholder="请输入用户名"
+                        placeholder="请输入关键字"
                         prefix-icon="el-icon-search"
                         v-model="input"
                         @input="handleInputUser"

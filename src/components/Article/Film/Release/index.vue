@@ -1,5 +1,5 @@
 <template>
-    <common-article :type="type" @film_info="film_info">
+    <common-article :type="type" :film_info="film_info">
         <template v-slot:film>
             <div class="film-wrapper">
                 <div class="film-name">

@@ -1,11 +1,18 @@
 <template>
-    <div></div>
+    <common-list :type="type"></common-list>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import CommonList from '@/components/Article/commonList.vue';
 
-@Component
-export default class ReadList extends Vue {}
+@Component({
+    components: {
+        CommonList
+    }
+})
+export default class ReadList extends Vue {
+    private type = 'read';
+}
 </script>
 <style lang="scss" scoped></style>

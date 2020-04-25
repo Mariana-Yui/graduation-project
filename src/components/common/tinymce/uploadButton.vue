@@ -103,7 +103,8 @@ export default class UploadButton extends Vue {
                 const key = utils.getRandomUploadName(file.name.slice(-3));
                 return uploadFile(blob, key, utils.getItem('uptoken'));
             });
-            Promise.all(blobs).then((res: any[]) => {
+            // 要加await, 否则catch捕获不到quq
+            await Promise.all(blobs).then((res: any[]) => {
                 this.$emit('success-upload', res);
                 this.uploading = false;
                 this.dialogVisible = false;
@@ -112,7 +113,7 @@ export default class UploadButton extends Vue {
         } catch (error) {
             console.log(error);
             this.uploading = false;
-            utils.removeItem('uptoeken');
+            utils.removeItem('uptoken');
             if (error.isRequestError && error.code === 401) {
                 this.handleUploadClick();
             } else {

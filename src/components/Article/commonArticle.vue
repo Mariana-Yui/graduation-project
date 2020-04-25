@@ -91,11 +91,13 @@ import { getModule } from 'vuex-module-decorators';
 import * as _ from 'lodash';
 import { filterXSS } from 'xss';
 import AdminModule from '@/store/modules/admin';
-import request from '../../utils/axios';
+import ArticleModule from '@/store/modules/article';
+import request from '@/utils/axios';
 import TinymceEditor from '@/components/common/tinymce/index.vue';
 import MyScroller from '@/components/common/scrollbar.vue';
 import CoverCropper from '@/components/Article/common/coverCropper.vue';
 import utils from '@/utils/utils';
+import { SAVE_ARTICLE, SET_ARTICLE_ID } from '@/store/types';
 
 @Component({
     components: {
@@ -109,10 +111,11 @@ export default class ArticleCommon extends Vue {
     /* read specfic slot */
     @Prop({ default: '' }) abstract: string;
     @Prop({ default: () => ({ name: '', quote: '' }) }) film_info: { name: string; quote: string };
-    @Prop({ default: () => ({ name: '', url: '', artists: '', cover: '', album: '' }) })
-    music_info: { name: string; url: string; artists: string; cover: string; album: string };
+    @Prop({ default: () => ({ name: '', urls: '', artists: '', cover: '', album: '' }) })
+    music_info: { name: string; urls: string; artists: string; cover: string; album: string };
     @Prop({ default: '' }) broadcast: string;
     private admin!: AdminModule;
+    private article_m!: ArticleModule;
     private article = {
         title: '',
         author: '',
@@ -192,6 +195,8 @@ export default class ArticleCommon extends Vue {
     }
     public created() {
         this.admin = getModule(AdminModule, this.$store);
+        this.article_m = getModule(ArticleModule, this.$store);
+        this.article_m[SET_ARTICLE_ID]('');
     }
     public async mounted() {
         if (this.isAdmin) {
@@ -254,12 +259,22 @@ export default class ArticleCommon extends Vue {
         this.throttle(async function() {
             if (this.validateOptions(0)) {
                 this.article.content = this.content;
-                this.formatAritleExceptXSS(this.article);
-                const { code, message } = await request.saveArticle(this.article, this.type, true);
-                if (code === 0) {
-                    this.$message(this.$rules.message(message));
-                } else {
-                    this.$message(this.$rules.message(message, 'error'));
+                this.formatArticleExceptXSS(this.article);
+                try {
+                    // 保存并将id写入vuex
+                    const { code, message } = await this.article_m[SAVE_ARTICLE]({
+                        article: this.article,
+                        type: this.type,
+                        isDemo: true,
+                        _id: this.article_m.articleId
+                    });
+                    if (code === 0) {
+                        this.$message(this.$rules.message(message));
+                    } else {
+                        this.$message(this.$rules.message(message, 'error'));
+                    }
+                } catch (error) {
+                    console.log(error);
                 }
             }
         });
@@ -267,14 +282,29 @@ export default class ArticleCommon extends Vue {
     public publishArticle() {
         this.throttle(async function() {
             if (this.validateOptions(1) && this.switchByType()) {
+                this.article.content = this.content;
                 this.formatArticleExceptXSS(this.article);
-                console.log(this.article);
-                // const { code, message } = await request.saveArticle(this.article, this.type, false);
-                // if (code === 0) {
-                //     this.$message(this.$rules.message(message));
-                // } else {
-                //     this.$message(this.$rules.message(message, 'error'));
-                // }
+                try {
+                    // 保存并将id写入vuex
+                    const { code, message } = await this.article_m[SAVE_ARTICLE]({
+                        article: this.article,
+                        type: this.type,
+                        isDemo: false,
+                        _id: this.article_m.articleId
+                    });
+                    if (code === 0) {
+                        this.$message(this.$rules.message(message));
+                        setTimeout(() => {
+                            this.$router.push({
+                                path: `${this.$route.path.slice(0, -6)}/list`
+                            });
+                        }, 1000);
+                    } else {
+                        this.$message(this.$rules.message(message, 'error'));
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
             }
         });
     }
@@ -312,7 +342,7 @@ export default class ArticleCommon extends Vue {
                 break;
             }
             case 'music': {
-                if (!this.music_info.url || !this.music_info.cover) {
+                if (!this.music_info.urls || !this.music_info.cover) {
                     this.$message.error('请选择音乐');
                     return false;
                 }
@@ -328,13 +358,13 @@ export default class ArticleCommon extends Vue {
         }
         return true;
     }
-    private formatAritleExceptXSS(obj: any | string) {
+    private formatArticleExceptXSS(obj: any | string) {
         if (utils.isPlainObject(obj)) {
             for (const key in obj) {
                 if (typeof obj[key] === 'string') {
                     obj[key] = filterXSS(obj[key]);
                 } else {
-                    this.formatAritleExceptXSS(obj[key]);
+                    this.formatArticleExceptXSS(obj[key]);
                 }
             }
         }
