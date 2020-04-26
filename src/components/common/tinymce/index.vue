@@ -62,7 +62,7 @@ export default class TinymceEditor extends Vue {
         tinymce.init({});
     }
     public handleInit() {
-        console.log();
+        this.$emit('editor-inited');
     }
     public handleSuccessUpload(res: any[]) {
         res.forEach((record: any) => {

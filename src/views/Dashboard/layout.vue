@@ -37,6 +37,8 @@ export default class DashboardLayout extends Vue {
 }
 </script>
 <style lang="scss" scoped>
+@import '~@/assets/css/default.scss';
+
 .layout {
     display: flex;
     flex-direction: column;
@@ -44,7 +46,7 @@ export default class DashboardLayout extends Vue {
     .main-content {
         flex: 1;
         display: flex;
-        max-height: calc(100vh - 61px - 30px);
+        max-height: calc(100vh - 61px) - $footer-height;
     }
 }
 </style>

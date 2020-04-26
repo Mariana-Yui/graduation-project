@@ -65,7 +65,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { VueCropper } from 'vue-cropper';
 import { getModule } from 'vuex-module-decorators';
 import QiniuModule from '@/store/modules/qiniu';
@@ -80,6 +80,7 @@ import { SET_UPTOKEN } from '../../../store/types';
     }
 })
 export default class CoverCropper extends Vue {
+    @Prop() coverUrl: string;
     private qiniu!: QiniuModule;
     private options = Object.assign(config.cropper_options(), {
         autoCropWidth: 200,
@@ -94,6 +95,14 @@ export default class CoverCropper extends Vue {
 
     get uploadText() {
         return this.cropping ? '重新上传' : '点击上传';
+    }
+
+    @Watch('coverUrl')
+    onLoadedCoverUrlChanged(newVal: string) {
+        this.$nextTick(() => {
+            (this.$refs['previewCover'] as HTMLElement).style.paddingTop = '50%';
+            (this.$refs['previewCover'] as HTMLElement).style.backgroundImage = `url(${newVal})`;
+        });
     }
 
     public created() {

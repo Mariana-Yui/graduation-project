@@ -1,7 +1,6 @@
 <template>
-    <keep-alive>
-        <router-view></router-view>
-    </keep-alive>
+    <!-- 这里把keep-alive去掉,否则缓存不触发created钩子 -->
+    <router-view></router-view>
 </template>
 
 <script lang="ts">

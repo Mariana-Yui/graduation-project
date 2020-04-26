@@ -28,7 +28,8 @@ import { Component, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import AdminModule from '@/store/modules/admin';
 import MenuModule from '@/store/modules/menu';
-import { ADMIN_LOGOUT, TOGGLE_MENU } from '@/store/types';
+import PermissionModule from '@/store/modules/permission';
+import { ADMIN_LOGOUT, TOGGLE_MENU, CLEAR_PERMISSION_ROLE } from '@/store/types';
 import ProfileDialog from './dialog.vue';
 @Component({
     components: {
@@ -38,6 +39,7 @@ import ProfileDialog from './dialog.vue';
 export default class DashboardHeader extends Vue {
     private admin: AdminModule;
     private menu: MenuModule;
+    private permission: PermissionModule;
     private profile_text = '个人资料';
     private logout_text = '退出';
     private imgPath = require('@/assets/img/logo.png');
@@ -56,9 +58,11 @@ export default class DashboardHeader extends Vue {
     public created() {
         this.admin = getModule(AdminModule, this.$store);
         this.menu = getModule(MenuModule, this.$store);
+        this.permission = getModule(PermissionModule, this.$store);
     }
     public handleLogout() {
         this.admin[ADMIN_LOGOUT]();
+        this.permission[CLEAR_PERMISSION_ROLE]();
         this.$router.push({ path: '/login' });
     }
     public handleOpenDialog() {

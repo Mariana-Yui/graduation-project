@@ -1,5 +1,5 @@
 <template>
-    <common-article :type="type" :film_info="film_info">
+    <common-article :type="type" :film_info="film_info" @loadFilmInfo="handleLoadFilmInfo">
         <template v-slot:film>
             <div class="film-wrapper">
                 <div class="film-name">
@@ -33,6 +33,10 @@ export default class CreateFilm extends Vue {
     private type = 'film';
     private film_info = { name: '', quote: '' };
     private rows = 2;
+
+    public handleLoadFilmInfo(film_info: any) {
+        this.film_info = film_info;
+    }
 }
 </script>
 <style lang="scss" scoped>

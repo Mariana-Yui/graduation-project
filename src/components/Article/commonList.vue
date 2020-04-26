@@ -8,6 +8,7 @@
                         v-model="input"
                         prefix-icon="el-icon-search"
                         placeholder="请输入关键字"
+                        @input="handleSearchInput"
                     ></el-input>
                 </el-col>
                 <el-col :span="2">
@@ -24,9 +25,16 @@
             </el-row>
             <el-table :data="tableData" class="article-table">
                 <el-table-column prop="title" label="标题"></el-table-column>
-                <el-table-column prop="author" label="作者"></el-table-column>
+                <el-table-column prop="author" label="作者" width="80"></el-table-column>
                 <el-table-column prop="content" label="内容"></el-table-column>
-                <el-table-column prop="cover" label="封面"></el-table-column>
+                <el-table-column label="封面">
+                    <template slot-scope="scope">
+                        <div
+                            class="article-cover"
+                            :style="{ 'background-image': `url(${scope.row.cover})` }"
+                        ></div>
+                    </template>
+                </el-table-column>
                 <el-table-column label="数据">
                     <el-table-column prop="views" label="浏览量" width="80"></el-table-column>
                     <el-table-column prop="likes" label="点赞数" width="80"></el-table-column>
@@ -34,27 +42,113 @@
                     <el-table-column prop="comments" label="评论数" width="80"></el-table-column>
                 </el-table-column>
                 <el-table-column label="时间">
-                    <el-table-column prop="create_time" label="创建时间"></el-table-column>
-                    <el-table-column prop="update_time" label="更新时间"></el-table-column>
-                    <el-table-column prop="publish_time" label="发布时间"></el-table-column>
+                    <el-table-column label="创建时间">
+                        <template slot-scope="scope">
+                            <div class="time-center-position">
+                                <span>{{ scope.row.create_time[0] }}</span>
+                                <br />
+                                <span>{{ scope.row.create_time[1] }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="更新时间">
+                        <template slot-scope="scope">
+                            <div class="time-center-position">
+                                <span>{{ scope.row.update_time[0] }}</span>
+                                <br />
+                                <span>{{ scope.row.update_time[1] }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="发布时间">
+                        <template slot-scope="scope">
+                            <div class="time-center-position">
+                                <span>{{ scope.row.publish_time[0] }}</span>
+                                <br />
+                                <span>{{ scope.row.publish_time[1] }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
                 </el-table-column>
-                <el-table-column prop="enable" label="是否有效" width="80"></el-table-column>
-                <el-table-column prop="is_top" label="是否置顶" width="80"></el-table-column>
+                <el-table-column v-if="isAdmin" prop="enable" label="是否有效" width="80">
+                    <template slot-scope="scope">
+                        <el-switch
+                            v-model="scope.row.enable"
+                            active-color="#13ce66"
+                            inactive-color="#ff4949"
+                            @change="handleChangeStatus(scope.row._id, scope.row.enable, 'enable')"
+                        >
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column v-if="isAdmin" prop="is_top" label="是否置顶" width="80">
+                    <template slot-scope="scope">
+                        <el-switch
+                            v-model="scope.row.is_top"
+                            active-color="#13ce66"
+                            inactive-color="#ff4949"
+                            @change="handleChangeStatus(scope.row._id, scope.row.is_top, 'is_top')"
+                        >
+                        </el-switch>
+                    </template>
+                </el-table-column>
                 <el-table-column label="操作">
-                    <!-- <template slot-scope="scope"></template> -->
+                    <template slot-scope="scope">
+                        <el-button
+                            @click.native="handleEditArticle(scope.row._id)"
+                            type="text"
+                            size="small"
+                        >
+                            编辑
+                        </el-button>
+                        <el-button
+                            @click.native="openDelDialog(scope.row)"
+                            type="text"
+                            size="small"
+                        >
+                            删除
+                        </el-button>
+                    </template>
                 </el-table-column>
             </el-table>
         </div>
+        <el-dialog
+            :visible.sync="dialogVisible"
+            :width="dialogWidth"
+            :show-close="false"
+            :close-on-click-modal="false"
+            :close-on-press-escape="false"
+            :modal="false"
+            class="del-article-dialog"
+        >
+            <span slot="title" class="dialog-title">
+                <i class="el-icon-warning-outline"></i>
+                <span>确定删除该文章?</span>
+            </span>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="handleDelArticle" size="medium" plain>
+                    确 定
+                </el-button>
+                <el-button @click="dialogVisible = false" size="medium">
+                    取 消
+                </el-button>
+            </span>
+        </el-dialog>
     </my-scroller>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
+import { Bind, Debounce } from 'lodash-decorators';
 import AdminModule from '@/store/modules/admin';
+import MenuModule from '@/store/modules/menu';
 import MyScroller from '../common/scrollbar.vue';
 import request from '@/utils/axios';
 import utils from '@/utils/utils';
+import { CHANGE_CURRENT_INDEX } from '@/store/types';
+
+type Which = 'enable' | 'is_top';
 
 @Component({
     components: {
@@ -64,17 +158,61 @@ import utils from '@/utils/utils';
 export default class ListCommon extends Vue {
     @Prop() type!: string;
     private admin!: AdminModule;
+    private menu!: MenuModule;
     private input = '';
     private tableData: any[] = [];
+    private dialogVisible = false;
+    private dialogWidth = '20%';
+    private curRow = { _id: '', author_info: '' };
 
-    get role() {
+    get isAdmin() {
         if (this.admin) {
-            return this.admin.userInfo.role || utils.getItem('userInfo').role;
+            return (this.admin.userInfo.role || utils.getItem('userInfo').role) === 'admin';
         }
-        return 'author';
+        return false;
+    }
+
+    private formatTableData(info: Array<any>) {
+        this.tableData = info.map((article: any) => {
+            const {
+                _id,
+                author_info,
+                title,
+                author,
+                content,
+                cover_img: cover,
+                create_time,
+                pre_release_time: update_time,
+                publish_time,
+                enable,
+                is_top,
+                views,
+                likes,
+                collects,
+                comment: comments
+            } = article;
+            return {
+                _id,
+                author_info,
+                title,
+                author,
+                content: content.replace(/<.*?\/?>/g, ''), // 取出html标签
+                cover,
+                create_time: create_time.split(' '),
+                update_time: update_time.split(' '),
+                publish_time: publish_time.split(' '),
+                enable,
+                is_top,
+                views,
+                likes,
+                collects,
+                comments: comments.length
+            };
+        });
     }
     public async created() {
         this.admin = getModule(AdminModule, this.$store);
+        this.menu = getModule(MenuModule, this.$store);
         try {
             const _id = this.admin._id || utils.getItem('_id');
             const {
@@ -85,12 +223,28 @@ export default class ListCommon extends Vue {
                 code: number;
                 message: string;
                 info: Array<any>;
-            } = await request.getAllTypedArticle(_id, this.type);
+            } = await request.searchArticleByKeywords(_id, '', this.type);
             if (code === 0) {
-                // TODO 格式化
-                this.tableData = info.map((article: any) => {
-                    const {};
-                });
+                this.formatTableData(info);
+            } else {
+                throw Error(message);
+            }
+        } catch (error) {
+            this.$message.error(`${error.message}, 请刷新重试...`);
+        }
+    }
+    @Bind()
+    @Debounce(500)
+    public async handleSearchInput() {
+        try {
+            const _id = this.admin._id || utils.getItem('_id');
+            const { code, message, info } = await request.searchArticleByKeywords(
+                _id,
+                this.input,
+                this.type
+            );
+            if (code === 0) {
+                this.formatTableData(info);
             } else {
                 throw Error(message);
             }
@@ -100,9 +254,62 @@ export default class ListCommon extends Vue {
     }
     // 跳转发布文章页面
     public handleAddArticle() {
+        this.menu[CHANGE_CURRENT_INDEX](`${this.menu.currentIndex.slice(0, -2)}-1`);
         this.$router.push({
-            path: `${this.$route.path.slice(0, -6)}/write`
+            path: `${this.$route.path.slice(0, -5)}/write`
         });
+    }
+    public handleEditArticle(_id: string) {
+        this.menu[CHANGE_CURRENT_INDEX](`${this.menu.currentIndex.slice(0, -2)}-1`);
+        this.$router.push({
+            path: `${this.$route.path.slice(0, -5)}/write`,
+            query: {
+                _id,
+                type: this.type
+            }
+        });
+    }
+    public openDelDialog(row: any) {
+        this.dialogVisible = true;
+        this.curRow = row;
+    }
+    // 不要吧dialog放在插槽中, scope获取有问题
+    public async handleDelArticle() {
+        const { _id: article_id, author_info: author_id } = this.curRow;
+        try {
+            const { code, message } = await request.delTypedArticle(
+                article_id,
+                author_id,
+                this.type
+            );
+            if (code === 0) {
+                this.$message.success(`删除id:${article_id}文章成功!`);
+                // 从表格中删除, 不重新请求
+                this.tableData = this.tableData.filter(
+                    (article: any) => article._id !== article_id
+                );
+            } else {
+                throw Error(message);
+            }
+        } catch (error) {
+            this.$message.error(`删除id:${article_id}文章失败, 请刷新重试...`);
+        }
+        this.dialogVisible = false;
+    }
+    public async handleChangeStatus(article_id: string, status: boolean, which: Which) {
+        try {
+            const { code, message } = await request.toggleArticleStatus(
+                article_id,
+                status,
+                which,
+                this.type
+            );
+            if (code !== 0) {
+                throw Error(message);
+            }
+        } catch (error) {
+            this.$message.error(error.message);
+        }
     }
 }
 </script>
@@ -124,6 +331,24 @@ export default class ListCommon extends Vue {
                 margin-right: 30px;
             }
         }
+        .article-table {
+            .article-cover {
+                background-position-x: 50%;
+                background-size: cover;
+                background-repeat: no-repeat;
+                height: 62.5px;
+            }
+            .time-center-position {
+                text-align: center;
+            }
+            ::v-deep .el-dialog {
+                -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+                .dialog-title {
+                    font-size: $larger-font-size;
+                }
+            }
+        }
     }
     ::v-deep .el-table--border,
     .el-table--group {
@@ -136,6 +361,9 @@ export default class ListCommon extends Vue {
         div.cell {
             @include addEllipsis();
         }
+    }
+    ::v-deep .el-dialog__body {
+        padding: 10px 0 0 !important;
     }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <common-article :type="type" :music_info="selectedSong">
+    <common-article :type="type" :music_info="selectedSong" @loadMusicInfo="handleLoadMusicInfo">
         <template v-slot:music>
             <div class="music-wrapper">
                 <div class="music-title">音乐板块设置:</div>
@@ -110,7 +110,6 @@ export default class CreateMusic extends Vue {
         const { code, info } = await request.getSpecificSongUrls(song.id);
         if (code === 0) {
             song.urls = info;
-            delete song.id;
             this.selectedSong = song;
             this.MePlayer({
                 target: '.music-player',
@@ -126,6 +125,10 @@ export default class CreateMusic extends Vue {
         } else {
             this.$message.error('暂时获取不到歌曲链接，请选择其他歌曲');
         }
+    }
+    public handleLoadMusicInfo(music_info: any) {
+        this.selectedSong = music_info;
+        this.handleSelect(this.selectedSong);
     }
 }
 </script>

@@ -1,5 +1,10 @@
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
-import { SET_DYNAMIC_ROUTES, SET_USER_ROLE, GENERATE_ROUTES } from '../types';
+import {
+    SET_DYNAMIC_ROUTES,
+    SET_USER_ROLE,
+    GENERATE_ROUTES,
+    CLEAR_PERMISSION_ROLE
+} from '../types';
 import { RouteConfig } from 'vue-router';
 import utils from '@/utils/utils';
 import { ConstantRoutes, AsyncRoutes } from '@/router';
@@ -24,6 +29,10 @@ export default class Permission extends VuexModule {
     addRoutes: RouteConfig[] = [];
     role = '';
 
+    @Mutation
+    public [CLEAR_PERMISSION_ROLE]() {
+        this.role = '';
+    }
     @Mutation
     public [SET_DYNAMIC_ROUTES](dynamicRoutes: any) {
         // 设置动态路由

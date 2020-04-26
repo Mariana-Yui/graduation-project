@@ -44,15 +44,22 @@ router.beforeEach(async (to, from, next) => {
             if (from.path === '/login') {
                 if (!to.matched.some((record) => record.meta.requiresAuth)) {
                     next({ ...to, replace: true }); // 当前导航被中断,from实际上没有变
+                } else {
+                    next();
                 }
-                next();
             } else {
                 try {
+                    // axios中拦截器验证token, 无效跳转login页
                     const data = await request.getToken();
-                    if (!to.matched.some((record) => record.meta.requiresAuth)) {
+                    console.log(to.matched.some((record) => record.meta.requiresAuth));
+                    if (
+                        !to.matched.some((record) => record.meta.requiresAuth) &&
+                        to.path !== '/404'
+                    ) {
                         next({ ...to, replace: true }); // 当前导航被中断,from实际上没有变
+                    } else {
+                        next();
                     }
-                    next();
                 } catch (error) {
                     console.log(error);
                     next({ path: '/login', replace: true });

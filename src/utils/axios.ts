@@ -147,7 +147,7 @@ class Request {
         const { data } = await this.instance.get('/user/admin/gettotal');
         return data;
     }
-    public async toggleUserStatus(username: string, enable: false) {
+    public async toggleUserStatus(username: string, enable: boolean) {
         const { data } = await this.instance.get('/user/admin/togglestatus', {
             params: {
                 username,
@@ -186,6 +186,16 @@ class Request {
         });
         return data;
     }
+    public async getArticleInfo(_id: string, author_id: string, type: string) {
+        const { data } = await this.instance.get('/article/publish/getArticleInfo', {
+            params: {
+                _id,
+                author_id,
+                type
+            }
+        });
+        return data;
+    }
     // 音乐模块
     public async searchMusicByKeywords(keywords: string) {
         const { data } = await this.instance.get('/article/music/searchMusicBykeywords', {
@@ -208,10 +218,42 @@ class Request {
         return data;
     }
     /*******************************文章列表**************************************/
-    public async getAllTypedArticle(_id: string, type: string) {
-        const { data } = await this.instance.get('/article/list/getAllTypedArticle', {
+    // public async getAllTypedArticle(_id: string, type: string) {
+    //     const { data } = await this.instance.get('/article/list/getAllTypedArticle', {
+    //         params: {
+    //             _id,
+    //             type
+    //         }
+    //     });
+    //     return data;
+    // }
+    public async delTypedArticle(article_id: string, author_id: string, type: string) {
+        const { data } = await this.instance.post('/article/list/delTypedArticle', {
+            article_id,
+            author_id,
+            type
+        });
+        return data;
+    }
+    public async toggleArticleStatus(
+        article_id: string,
+        status: boolean,
+        which: 'enable' | 'is_top',
+        type: string
+    ) {
+        const { data } = await this.instance.post('/article/list/toggleArticleStatus', {
+            article_id,
+            status,
+            which,
+            type
+        });
+        return data;
+    }
+    public async searchArticleByKeywords(_id: string, keywords: string, type: string) {
+        const { data } = await this.instance.get('/article/list/searchArticleByKeywords', {
             params: {
                 _id,
+                keywords,
                 type
             }
         });

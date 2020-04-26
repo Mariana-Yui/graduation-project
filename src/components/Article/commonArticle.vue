@@ -70,6 +70,7 @@
                         placeholder="选择日期"
                         :picker-options="pickerOptions"
                         @change="handleChangeDate"
+                        :disabled="!isAdmin && route.query._id"
                     >
                     </el-date-picker>
                 </el-col>
@@ -77,10 +78,17 @@
             <!-- 摘要 -->
             <slot name="abstract"></slot>
             <slot name="film"></slot>
-            <tinymce-editor :height="editorHeight" ref="tinymce"></tinymce-editor>
+            <tinymce-editor
+                :height="editorHeight"
+                ref="tinymce"
+                @editor-inited="handleEditorInited"
+            ></tinymce-editor>
             <slot name="music"></slot>
             <slot name="broadcast"></slot>
-            <cover-cropper @success-upload="handleUploadCoverSuccess"></cover-cropper>
+            <cover-cropper
+                @success-upload="handleUploadCoverSuccess"
+                :coverUrl="loadedCoverUrl"
+            ></cover-cropper>
         </div>
     </my-scroller>
 </template>
@@ -111,8 +119,15 @@ export default class ArticleCommon extends Vue {
     /* read specfic slot */
     @Prop({ default: '' }) abstract: string;
     @Prop({ default: () => ({ name: '', quote: '' }) }) film_info: { name: string; quote: string };
-    @Prop({ default: () => ({ name: '', urls: '', artists: '', cover: '', album: '' }) })
-    music_info: { name: string; urls: string; artists: string; cover: string; album: string };
+    @Prop({ default: () => ({ id: '', name: '', urls: '', artists: '', cover: '', album: '' }) })
+    music_info: {
+        id: number;
+        name: string;
+        urls: string;
+        artists: string;
+        cover: string;
+        album: string;
+    };
     @Prop({ default: '' }) broadcast: string;
     private admin!: AdminModule;
     private article_m!: ArticleModule;
@@ -134,6 +149,7 @@ export default class ArticleCommon extends Vue {
     private scheduleTime = 100;
     private delay = 5000;
     private max = Date.now() - this.delay;
+    private loadedCoverUrl = '';
 
     private pickerOptions = {
         disabledDate(time: Date) {
@@ -193,10 +209,47 @@ export default class ArticleCommon extends Vue {
     onBroadcastChanged(val: any) {
         this.article.broadcast = val;
     }
-    public created() {
+    public async created() {
         this.admin = getModule(AdminModule, this.$store);
         this.article_m = getModule(ArticleModule, this.$store);
         this.article_m[SET_ARTICLE_ID]('');
+        // 文章编辑逻辑
+        if (this.$route && this.$route.query && this.$route.query._id && this.$route.query.type) {
+            try {
+                const { _id, type } = this.$route.query;
+                const { _id: author_id } = this.admin;
+                const { code, message, info } = await request.getArticleInfo(
+                    _id as string,
+                    author_id,
+                    type as string
+                );
+                if (code === 0) {
+                    const {
+                        title,
+                        author,
+                        publish_time: publishDate,
+                        cover_img: cover,
+                        content
+                    } = info;
+                    this.article = Object.assign(this.article, {
+                        title,
+                        author,
+                        publishDate,
+                        cover,
+                        content
+                    });
+                    // emit修改父组件变量
+                    this.emitSlotInfoByType(info);
+                    // prop子组件img
+                    this.loadedCoverUrl = this.article.cover;
+                    this.article_m[SET_ARTICLE_ID](this.$route.query._id as string);
+                } else {
+                    throw Error(message);
+                }
+            } catch (error) {
+                this.$message.error(error.message);
+            }
+        }
     }
     public async mounted() {
         if (this.isAdmin) {
@@ -368,6 +421,38 @@ export default class ArticleCommon extends Vue {
                 }
             }
         }
+    }
+    public emitSlotInfoByType(info: any) {
+        switch (this.type) {
+            case 'read': {
+                this.$emit('loadAbstract', info.abstract);
+                break;
+            }
+            case 'music': {
+                this.$emit('loadMusicIfo', info.music_info);
+                break;
+            }
+            case 'film': {
+                this.$emit('loadFilmInfo', info.film_info);
+                break;
+            }
+            case 'broadcast': {
+                this.$emit('loadBroadcast', info.broadcast);
+            }
+        }
+    }
+    public handleEditorInited() {
+        this.$nextTick(() => {
+            // content写入tinymce
+            if (
+                this.$route &&
+                this.$route.query &&
+                this.$route.query._id &&
+                this.$route.query.type
+            ) {
+                (this.$refs['tinymce'] as any).content = this.article.content;
+            }
+        });
     }
 }
 </script>

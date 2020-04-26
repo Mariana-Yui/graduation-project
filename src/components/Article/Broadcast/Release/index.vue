@@ -1,5 +1,5 @@
 <template>
-    <common-article :type="type" :broadcast="broadcast">
+    <common-article :type="type" :broadcast="broadcast" @loadBroadcast="handleLoadBroadcast">
         <template v-slot:broadcast>
             <div class="broadcast-upload-wrapper">
                 <div class="broadcast-title">电台板块设置:</div>
@@ -103,6 +103,9 @@ export default class CreateBroadcast extends Vue {
                 src: this.broadcast
             }
         });
+    }
+    private handleLoadBroadcast(broadcast: string) {
+        this.broadcast = broadcast;
     }
 }
 </script>

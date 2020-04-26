@@ -11,10 +11,12 @@ export const SET_UPTOKEN_SYNC = 'setUpTokenSync';
 export const SET_UPLOAD_IMAGE_URL = 'setImageUrl';
 
 export const TOGGLE_MENU = 'toggleCollapse';
+export const CHANGE_CURRENT_INDEX = 'changeCurIndex';
 
 export const SET_DYNAMIC_ROUTES = 'setDynamicRoutes';
 export const SET_USER_ROLE = 'setUserRole';
 export const GENERATE_ROUTES = 'generateRoutes';
+export const CLEAR_PERMISSION_ROLE = 'clearPermissionRole';
 
 export const SET_ARTICLE_ID = 'setArticleId';
 export const SAVE_ARTICLE = 'saveArticle';

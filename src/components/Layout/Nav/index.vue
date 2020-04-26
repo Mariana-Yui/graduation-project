@@ -23,6 +23,7 @@ import { getModule } from 'vuex-module-decorators';
 import MenuModule from '@/store/modules/menu';
 import PermissionModule from '@/store/modules/permission';
 import MenuItem from './menuItem.vue';
+import { CHANGE_CURRENT_INDEX } from '@/store/types';
 
 @Component({
     components: {
@@ -32,8 +33,13 @@ import MenuItem from './menuItem.vue';
 export default class NavMenu extends Vue {
     private menu!: MenuModule;
     private permission!: PermissionModule;
-    private curIndex!: string;
 
+    get curIndex() {
+        if (this.menu) {
+            return this.menu.currentIndex;
+        }
+        return '1-1';
+    }
     get isCollapse() {
         return this.menu.isCollapse || false;
     }
@@ -50,7 +56,7 @@ export default class NavMenu extends Vue {
         const pathArray = this.$route.path.split('/').filter((v: string) => v !== '');
         const addRoutes = this.permission.addRoutes;
         const index = this.getCurIndex(addRoutes, pathArray);
-        this.curIndex = index;
+        this.menu[CHANGE_CURRENT_INDEX](index);
     }
     // 递归获取index
     public getCurIndex(addRoutes: any[], pathArray: any[]): string {

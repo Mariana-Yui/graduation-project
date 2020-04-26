@@ -1,5 +1,5 @@
 <template>
-    <common-article :type="type" :abstract="abstract">
+    <common-article :type="type" :abstract="abstract" @loadAbstract="handleLoadAbstract">
         <template v-slot:abstract>
             <div class="abstract-wrapper">
                 <h3>摘要:</h3>
@@ -27,6 +27,10 @@ export default class CreateRead extends Vue {
     private type = 'read';
     private abstract = '';
     private rows = 1;
+
+    public handleLoadAbstract(abstract: string) {
+        this.abstract = abstract;
+    }
 }
 </script>
 <style lang="scss" scoped>
