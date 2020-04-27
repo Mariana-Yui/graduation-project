@@ -89,6 +89,7 @@
             :isAdmin="true"
             @close-dialog="handleCloseDialog"
             v-if="dialogVisible"
+            dialogType="edit"
         >
             <template v-slot:title>
                 <div class="slot-title">{{ currentUser.username }}的个人资料</div>
@@ -99,6 +100,8 @@
             :isAdmin="true"
             @close-dialog="handleCloseNewifyDialog"
             v-if="dialogVisible_2"
+            dialogType="create"
+            :showPassInput="true"
         >
             <template v-slot:title>
                 <div class="slot-title">新建用户</div>
@@ -174,7 +177,8 @@ export default class AdminUser extends Vue {
     }
     public async handleCloseDialog(updated: any) {
         if (updated !== '') {
-            const username = this.tableData[this.currentIndex].username;
+            delete updated.password;
+            // const username = this.tableData[this.currentIndex].username;
             this.tableData.splice(this.currentIndex, 1, {
                 ...this.tableData[this.currentIndex],
                 ...updated

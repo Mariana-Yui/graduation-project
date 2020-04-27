@@ -31,5 +31,6 @@ export default {
     tinymce_toolbar: () => [
         'bold italic underline strikethrough blockquote|forecolor backcolor|formatselect |fontsizeselect | alignleft aligncenter alignright alignjustify | outdent indent |codeformat blockformats| removeformat undo redo ',
         'bullist numlist toc pastetext|codesample charmap  hr insertdatetime |lists image media table link unlink |code searchreplace fullscreen help '
-    ]
+    ],
+    sohu_address_interface: 'https://pv.sohu.com/cityjson?ie=utf-8'
 };

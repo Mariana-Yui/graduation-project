@@ -4,8 +4,8 @@
             <div class="logo">
                 <img :src="imgPath" class="logo-img" alt="" />
                 <div class="logo-text">
-                    <span class="logo-text-1">YUI</span>
-                    <span class="logo-text-2">:文章管理系统</span>
+                    <!-- <span class="logo-text-1">YUI</span> -->
+                    <span class="logo-text-2">文章管理系统</span>
                 </div>
             </div>
             <i :class="iconClass" @click="toggleMenu"></i>
@@ -75,6 +75,7 @@ export default class DashboardHeader extends Vue {
 </script>
 <style lang="scss" scoped>
 @import '~@/assets/css/font.scss';
+
 .dashboard-header {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     flex-shrink: 0;
@@ -99,7 +100,7 @@ export default class DashboardHeader extends Vue {
                 margin-top: 10px;
             }
             .logo-text-2 {
-                font-family: 'LongCang';
+                font-family: 'MaShanZheng';
                 font-size: 30px;
             }
         }

@@ -168,7 +168,9 @@ class Request {
     }
     public async createNewAdmin(info: any) {
         const { data } = await this.instance.post('/user/admin/createnewadmin', {
-            info
+            info: Object.assign({}, info, {
+                password: CryptoJS.MD5(info.password, config.secret_key).toString()
+            })
         });
         return data;
     }

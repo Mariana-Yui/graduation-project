@@ -28,7 +28,7 @@
                 <el-table-column prop="author" label="作者" width="80"></el-table-column>
                 <el-table-column prop="content" label="内容"></el-table-column>
                 <el-table-column label="封面">
-                    <template slot-scope="scope">
+                    <template v-slot:default="scope">
                         <div
                             class="article-cover"
                             :style="{ 'background-image': `url(${scope.row.cover})` }"
@@ -43,7 +43,7 @@
                 </el-table-column>
                 <el-table-column label="时间">
                     <el-table-column label="创建时间">
-                        <template slot-scope="scope">
+                        <template v-slot:default="scope">
                             <div class="time-center-position">
                                 <span>{{ scope.row.create_time[0] }}</span>
                                 <br />
@@ -52,7 +52,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column label="更新时间">
-                        <template slot-scope="scope">
+                        <template v-slot:default="scope">
                             <div class="time-center-position">
                                 <span>{{ scope.row.update_time[0] }}</span>
                                 <br />
@@ -61,7 +61,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column label="发布时间">
-                        <template slot-scope="scope">
+                        <template v-slot:default="scope">
                             <div class="time-center-position">
                                 <span>{{ scope.row.publish_time[0] }}</span>
                                 <br />
@@ -71,7 +71,7 @@
                     </el-table-column>
                 </el-table-column>
                 <el-table-column v-if="isAdmin" prop="enable" label="是否有效" width="80">
-                    <template slot-scope="scope">
+                    <template v-slot:default="scope">
                         <el-switch
                             v-model="scope.row.enable"
                             active-color="#13ce66"
@@ -82,7 +82,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column v-if="isAdmin" prop="is_top" label="是否置顶" width="80">
-                    <template slot-scope="scope">
+                    <template v-slot:default="scope">
                         <el-switch
                             v-model="scope.row.is_top"
                             active-color="#13ce66"
@@ -93,7 +93,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column label="操作">
-                    <template slot-scope="scope">
+                    <template v-slot:default="scope">
                         <el-button
                             @click.native="handleEditArticle(scope.row._id)"
                             type="text"

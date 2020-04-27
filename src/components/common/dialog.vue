@@ -13,6 +13,14 @@
                 <el-form-item label="昵称" :label-width="formLabelWidth" prop="username">
                     <el-input v-model="elForm.username" autocomplete="off"></el-input>
                 </el-form-item>
+                <el-form-item
+                    label="密码"
+                    :label-width="formLabelWidth"
+                    prop="password"
+                    v-if="showPassInput"
+                >
+                    <el-input v-model="elForm.password" autocomplete="off"></el-input>
+                </el-form-item>
                 <el-form-item label="联系方式" :label-width="formLabelWidth" prop="phone">
                     <el-input v-model="elForm.phone" autocomplete="off"></el-input>
                 </el-form-item>
@@ -41,7 +49,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="closeDialogOnly">取 消</el-button>
-                <el-button type="success" @click="triggerCloseDialog">更新资料</el-button>
+                <el-button :type="btnType" @click="triggerCloseDialog">{{ btnText }}</el-button>
             </div>
         </el-dialog>
     </div>
@@ -53,6 +61,8 @@ import request from '@/utils/axios';
 
 @Component
 export default class ProfileDialog extends Vue {
+    @Prop({ default: 'edit' }) dialogType: 'edit' | 'create';
+    @Prop() showPassInput: boolean;
     @Prop({
         default: () => ({
             username: '',
@@ -75,6 +85,7 @@ export default class ProfileDialog extends Vue {
     @Prop({ default: false }) isAdmin: boolean;
     private elForm = {
         username: '',
+        password: '',
         email: '',
         phone: '',
         description: '',
@@ -89,13 +100,23 @@ export default class ProfileDialog extends Vue {
             (this as any).$rules.required('用户名不能为空'),
             { validator: this.validateUsername, trigger: 'blur' }
         ],
+        password: [(this as any).$rules.password, (this as any).$rules.required('密码不能为空')],
         phone: [(this as any).$rules.mobile, (this as any).$rules.required('手机号码不能为空')],
         email: [(this as any).$rules.email, (this as any).$rules.required('邮箱不能为空')],
         sign: [{ validator: this.validateSign, trigger: 'blur' }]
     };
 
+    get btnText() {
+        return this.dialogType === 'edit' ? '更新资料' : '新建';
+    }
+    get btnType() {
+        return this.dialogType === 'edit' ? 'success' : 'primary';
+    }
+
     public created() {
         this.elForm = Object.assign({}, this.elForm, this.form);
+        // 给个默认值通过validate, emit时删除
+        if (!this.showPassInput) this.elForm.password = '111111';
     }
     public async validateUsername(rule: any, value: string, cb: Function) {
         if (value === this.form.username) cb();

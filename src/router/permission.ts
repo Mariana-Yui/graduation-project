@@ -51,7 +51,6 @@ router.beforeEach(async (to, from, next) => {
                 try {
                     // axios中拦截器验证token, 无效跳转login页
                     const data = await request.getToken();
-                    console.log(to.matched.some((record) => record.meta.requiresAuth));
                     if (
                         !to.matched.some((record) => record.meta.requiresAuth) &&
                         to.path !== '/404'
