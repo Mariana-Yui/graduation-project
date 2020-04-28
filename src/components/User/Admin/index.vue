@@ -118,6 +118,7 @@ import request from '@/utils/axios';
 import CommonDialog from '@/components/common/dialog.vue';
 import MyScroller from '@/components/common/scrollbar.vue';
 import utils from '@/utils/utils';
+import config from '@/config/config.default';
 
 @Component({
     components: {
@@ -213,22 +214,49 @@ export default class AdminUser extends Vue {
     }
     public async handleCloseNewifyDialog(newUser: any) {
         if (newUser !== '') {
-            const data = await request.createNewAdmin(newUser);
-            if (data.code === 0) {
-                this.$message((this as any).$rules.message(data.message));
-                // 这里也可以通过重新发送两次请求获取, 但是我不:D
-                this.tableData.push(data.info);
-                this.total++;
-            } else {
-                this.$message((this as any).$rules.message(data.message, 'error'));
+            try {
+                newUser.location = await this.getUserLocation();
+                const data = await request.createNewAdmin(newUser);
+                if (data.code === 0) {
+                    this.$message((this as any).$rules.message(data.message));
+                    // 这里也可以通过重新发送两次请求获取, 但是我不:D
+                    this.tableData.push(data.info);
+                    this.total++;
+                } else {
+                    this.$message((this as any).$rules.message(data.message, 'error'));
+                }
+            } catch (error) {
+                this.$message.error(error.message);
             }
         }
         this.dialogVisible_2 = false;
+    }
+    // JSONP, ajax存在跨域问题
+    public getUserLocation() {
+        return new Promise((resolve, reject) => {
+            const src = document.createElement('script');
+            // avoid always wait
+            const timer = setTimeout(() => {
+                reject(Error('exceed time'));
+            }, 5000);
+            src.src = config.sohu_address_interface;
+            src.onload = function() {
+                clearTimeout(timer);
+                const location = {
+                    last_ip: window.returnCitySN.cip,
+                    last_ip_location: window.returnCitySN.cname.replace(/省|市/g, '')
+                };
+                document.body.removeChild(document.body.lastElementChild);
+                resolve(location);
+            };
+            document.body.appendChild(src);
+        });
     }
 }
 </script>
 <style lang="scss" scoped>
 @import '~@/assets/css/default.scss';
+@import '~@/assets/css/mixin.scss';
 
 .admin-list-scrollbar {
     .admin-list-wrapper {
@@ -253,12 +281,7 @@ export default class AdminUser extends Vue {
         .admin-table {
             .scope-avatar {
                 margin: 0 auto;
-                background-size: cover;
-                background-position-x: 50%;
-                background-repeat: no-repeat;
-                width: 40px;
-                height: 40px;
-                border-radius: 50% 50%;
+                @include circleImg(40px);
             }
         }
     }

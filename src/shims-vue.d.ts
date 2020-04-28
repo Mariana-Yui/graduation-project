@@ -15,5 +15,10 @@ declare global {
     interface Window {
         tinyMCE: any;
         mePlayer: any;
+        returnCitySN?: {
+            cip: string;
+            cid: string;
+            cname: string;
+        };
     }
 }

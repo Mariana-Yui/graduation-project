@@ -174,6 +174,18 @@ class Request {
         });
         return data;
     }
+    /*******************************用户详情列表**************************************/
+
+    public async getUserDetailsByKeywords(size: number, page: number, keyword: string) {
+        const { data } = await this.instance.get('/user/detail/getUserDetailsByKeywords', {
+            params: {
+                size,
+                page,
+                keyword
+            }
+        });
+        return data;
+    }
     /*******************************发布文章**************************************/
     public async getAllUsername() {
         const { data } = await this.instance.get('/article/publish/getallusername');
