@@ -38,7 +38,16 @@
                         <el-table-column prop="username" label="用户名"></el-table-column>
                         <el-table-column prop="role_name" label="用户类型"></el-table-column>
                         <el-table-column prop="phone" label="联系方式"></el-table-column>
-                        <el-table-column prop="email" label="邮箱"></el-table-column>
+                        <el-table-column label="邮箱">
+                            <template v-slot:default="scope">
+                                <el-popover trigger="hover" placement="top">
+                                    <p>邮箱: {{ scope.row.email }}</p>
+                                    <div slot="reference">
+                                        {{ scope.row.email }}
+                                    </div>
+                                </el-popover>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="create_time" label="创建时间"></el-table-column>
                         <el-table-column prop="enable" width="120" label="是否有效">
                             <template slot-scope="scope">

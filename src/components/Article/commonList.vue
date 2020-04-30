@@ -108,6 +108,38 @@
                         >
                             删除
                         </el-button>
+                        <div class="audit-btn">
+                            <el-button
+                                v-if="scope.row.status !== 1"
+                                :type="
+                                    scope.row.status === 4
+                                        ? 'success'
+                                        : scope.row.status === 3
+                                        ? 'error'
+                                        : 'info'
+                                "
+                            >
+                                {{ auditStatus[scope.row.status] }}
+                            </el-button>
+                            <el-dropdown v-else trigger="click">
+                                <el-button type="info">
+                                    {{ auditStatus[scope.row.status] }}
+                                    <i class="el-icon-arrow-down el-icon--right"></i>
+                                </el-button>
+                                <el-dropdown-menu slot="dropdown" class="my-dropdown-menu">
+                                    <el-dropdown-item
+                                        @click.native="handleChangeAuditStatus(scope.row, 2)"
+                                    >
+                                        {{ auditStatus[2] }}
+                                    </el-dropdown-item>
+                                    <el-dropdown-item
+                                        @click.native="handleChangeAuditStatus(scope.row, 3)"
+                                    >
+                                        {{ auditStatus[3] }}
+                                    </el-dropdown-item>
+                                </el-dropdown-menu>
+                            </el-dropdown>
+                        </div>
                     </template>
                 </el-table-column>
             </el-table>
@@ -164,6 +196,7 @@ export default class ListCommon extends Vue {
     private dialogVisible = false;
     private dialogWidth = '20%';
     private curRow = { _id: '', author_info: '' };
+    private auditStatus = ['草稿', '审核中', '审核成功', '审核失败', '发布中'];
 
     get isAdmin() {
         if (this.admin) {
@@ -189,6 +222,7 @@ export default class ListCommon extends Vue {
                 views,
                 likes,
                 collects,
+                status,
                 comment: comments
             } = article;
             return {
@@ -206,6 +240,7 @@ export default class ListCommon extends Vue {
                 views,
                 likes,
                 collects,
+                status,
                 comments: comments.length
             };
         });
@@ -311,6 +346,21 @@ export default class ListCommon extends Vue {
             this.$message.error(error.message);
         }
     }
+    public async handleChangeAuditStatus(row: any, status: number) {
+        row.status = status;
+        try {
+            const { code, message, info } = await request.changeAuditStutus(
+                row._id,
+                status,
+                this.type
+            );
+            if (code !== 0) {
+                throw Error(message);
+            }
+        } catch (error) {
+            this.$message.error(error.message);
+        }
+    }
 }
 </script>
 <style lang="scss" scoped>
@@ -340,6 +390,17 @@ export default class ListCommon extends Vue {
             }
             .time-center-position {
                 text-align: center;
+            }
+            .audit-btn {
+                ::v-deep .el-button {
+                    width: 80px !important;
+                    padding: 6px 0 !important;
+                    text-align: center;
+                    opacity: 0.7;
+                    .el-icon--right {
+                        margin-left: 0 !important;
+                    }
+                }
             }
             ::v-deep .el-dialog {
                 -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;

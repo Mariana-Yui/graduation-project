@@ -273,6 +273,14 @@ class Request {
         });
         return data;
     }
+    public async changeAuditStutus(_id: string, status: number, type: string) {
+        const { data } = await this.instance.post('/article/list/changeAuditStutus', {
+            _id,
+            status,
+            type
+        });
+        return data;
+    }
 }
 
 const request = new Request();
