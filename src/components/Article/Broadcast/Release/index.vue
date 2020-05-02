@@ -32,7 +32,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
 import QiniuModule from '@/store/modules/qiniu';
-import '@/components/common/meplayer/js/main';
+import { mePlayer } from '@/components/common/meplayer/js/main';
 import '@/components/common/meplayer/dist/meplayer.min.css';
 import CommonArticle from '@/components/Article/commonArticle.vue';
 import utils from '@/utils/utils';
@@ -52,8 +52,8 @@ export default class CreateBroadcast extends Vue {
     private fileList: any[] = [];
     private beforeUpload = true;
     private uploading = false;
-    private MePlayer = window.mePlayer;
     private qiniu!: QiniuModule;
+    private MePlayer = mePlayer;
 
     public created() {
         this.qiniu = getModule(QiniuModule, this.$store);

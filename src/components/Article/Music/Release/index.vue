@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
-import '@/components/common/meplayer/js/main';
+import { mePlayer } from '@/components/common/meplayer/js/main';
 import '@/components/common/meplayer/dist/meplayer.min.css';
 import CommonArticle from '@/components/Article/commonArticle.vue';
 import request from '@/utils/axios';
@@ -52,7 +52,7 @@ export default class CreateMusic extends Vue {
     private state = ''; // 搜索框value
     private prev: string | number = -1; // 缓存上次搜索内容, 默认是number,这样和string就一定不相等
     private focus = false;
-    private MePlayer = window.mePlayer;
+    private MePlayer = mePlayer;
 
     private formatSongs(songs: any[]) {
         return songs.slice(0, 6).map((song: any) => {

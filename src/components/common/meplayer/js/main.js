@@ -7,14 +7,15 @@ import * as utils from './utils';
 import * as spectrum from './spectrum';
 import * as selector from './selector';
 
-const root =
-    typeof window == 'object' && window.window === window
-        ? window
-        : typeof global == 'object' && global.global === global
-        ? global
-        : this;
+// const root =
+//     typeof window == 'object' && window.window === window
+//         ? window
+//         : typeof global == 'object' && global.global === global
+//         ? global
+//         : this;
 
-root.mePlayer = function(options) {
+// root.
+export const mePlayer = function(options) {
     // 检查必填选项
     if (!(options.music && options.music.src)) {
         console.error('必须指定音乐地址哦~');
@@ -103,11 +104,11 @@ root.mePlayer = function(options) {
     }
 
     // 重定义meplayer
-    root.mePlayer = {
-        play: play,
-        pause: pause,
-        toggleTheme: toggleTheme
-    };
+    // root.mePlayer = {
+    //     play: play,
+    //     pause: pause,
+    //     toggleTheme: toggleTheme
+    // };
 
     // 给播放器绑定各种事件
     function eventInit() {
@@ -286,6 +287,6 @@ root.mePlayer = function(options) {
     }
 };
 
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = root.mePlayer;
-}
+// if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+//     module.exports = root.mePlayer;
+// }
