@@ -127,7 +127,9 @@ export default class ProfileDialog extends Vue {
         (this.$refs['ruleForm'] as any).validate(async (valid: boolean) => {
             if (valid) {
                 // 写入本地及vuex
-                const message = await this.admin[UPDATE_ADMIN_INFO](this.form);
+                const message = await this.admin[UPDATE_ADMIN_INFO](
+                    Object.assign(this.form, { _id: this.admin._id })
+                );
                 if (message) {
                     this.$message((this as any).$rules.message(message));
                 }

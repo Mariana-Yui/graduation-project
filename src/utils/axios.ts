@@ -45,7 +45,7 @@ class Request {
                             //     path: '/login',
                             //     query: { redirect: '/dashboard' }
                             // });
-                            debugger;
+                            // debugger;
                             window.location.href = 'http://localhost:8080/login?redirect=dashboard';
                             // }
                             // utils.removeItem('token', '_id', 'userInfo');
