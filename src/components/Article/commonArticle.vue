@@ -66,11 +66,12 @@
                     <el-date-picker
                         v-model="article.publishDate"
                         align="right"
-                        type="date"
+                        type="datetime"
                         placeholder="选择日期"
                         :picker-options="pickerOptions"
                         @change="handleChangeDate"
                         :disabled="!isAdmin && route.query._id"
+                        format="yyyy-MM-dd HH:mm:ss"
                     >
                     </el-date-picker>
                 </el-col>
@@ -154,7 +155,7 @@ export default class ArticleCommon extends Vue {
     private pickerOptions = {
         disabledDate(time: Date) {
             return (
-                time.getTime() < Date.now() - 3600 * 24 * 1000 ||
+                time.getTime() < Date.now() - 1 ||
                 time.getTime() > Date.now() + 3600 * 24 * 7 * 1000
             );
         },
@@ -256,7 +257,10 @@ export default class ArticleCommon extends Vue {
             const data = await request.getAllUsername();
             if (data.code === 0) {
                 this.candidates = data.info.user;
-                this.article.author = this.candidates[0];
+                // fix 编辑时作者显示错误bug
+                if (this.article.author === '') {
+                    this.article.author = this.candidates[0];
+                }
             }
         } else {
             this.article.author = this.admin.userInfo.username;
@@ -429,7 +433,7 @@ export default class ArticleCommon extends Vue {
                 break;
             }
             case 'music': {
-                this.$emit('loadMusicIfo', info.music_info);
+                this.$emit('loadMusicInfo', info.music_info);
                 break;
             }
             case 'film': {
@@ -443,6 +447,7 @@ export default class ArticleCommon extends Vue {
     }
     public handleEditorInited() {
         this.$nextTick(() => {
+            console.log('emit');
             // content写入tinymce
             if (
                 this.$route &&
@@ -450,7 +455,9 @@ export default class ArticleCommon extends Vue {
                 this.$route.query._id &&
                 this.$route.query.type
             ) {
-                (this.$refs['tinymce'] as any).content = this.article.content;
+                setTimeout(() => {
+                    (this.$refs['tinymce'] as any).content = this.article.content;
+                }, 500);
             }
         });
     }

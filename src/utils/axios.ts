@@ -77,6 +77,15 @@ class Request {
         });
         return data;
     }
+    /*******************************首页**************************************/
+    public async getAdminDetails(id: string) {
+        const { data } = await this.instance.get('/home/getAdminDetails', {
+            params: {
+                id
+            }
+        });
+        return data;
+    }
     /*******************************个人资料**************************************/
     public async checkUsername(username: string) {
         const { data } = await this.instance.get('/profile/checkUsername', {

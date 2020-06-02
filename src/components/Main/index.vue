@@ -1,7 +1,5 @@
 <template>
-    <div class="main-page-wrapper">
-        <component :is="currentRole"></component>
-    </div>
+    <component :is="currentRole"></component>
 </template>
 
 <script lang="ts">

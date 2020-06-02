@@ -117,6 +117,7 @@ export default class ImageCropper extends Vue {
                     const res = await request.uploadFile(blob, imgName, utils.getItem('uptoken'));
                     const avatar_url = `${config.upload_domain}/${imgName}`;
                     this.admin[UPDATE_ADMIN_INFO]({
+                        _id: this.admin._id,
                         username: this.admin.userInfo.username,
                         avatar: avatar_url
                     });

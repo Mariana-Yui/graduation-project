@@ -238,8 +238,8 @@ export default class ListCommon extends Vue {
                 enable,
                 is_top,
                 views,
-                likes,
-                collects,
+                likes: likes.length,
+                collects: likes.length,
                 status,
                 comments: comments.length
             };

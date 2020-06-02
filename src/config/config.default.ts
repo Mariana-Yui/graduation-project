@@ -1,10 +1,10 @@
 export default {
-    nickName: 'DIYGod',
+    nickName: 'YUI',
     baseURL: 'http://localhost:7001',
     origin: '127.0.0.1:8080',
     time: 10 * 1000,
     secret_key: 'diygod',
-    upload_domain: 'http://q95bvp3v9.bkt.clouddn.com',
+    upload_domain: 'http://qbag4sqt8.bkt.clouddn.com',
     default_cover: 'https://p1.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg',
     cropper_options: () => ({
         outputSize: 1, // 裁剪生成图片的质量
