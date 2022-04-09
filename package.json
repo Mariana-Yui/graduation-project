@@ -19,7 +19,7 @@
     "lodash": "^4.17.15",
     "lodash-decorators": "^6.0.1",
     "meplayer": "^0.1.4",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "nprogress": "^0.2.0",
     "qiniu-js": "^2.5.5",
     "tinymce": "^5.2.1",
